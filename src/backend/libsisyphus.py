@@ -132,16 +132,20 @@ def redcore_sync():
     sync_sisyphus_database_remote_packages_table()
 
 def generate_sisyphus_local_packages_table_csv_pre():
-    subprocess.call(['/usr/share/sisyphus-cli/helpers/make_local_csv_pre']) # this is really hard to do in python, so we cheat with a bash helper script
+    subprocess.call(['/usr/share/sisyphus/helpers/make_local_csv_pre']) # this is really hard to do in python, so we cheat with a bash helper script
 
 def generate_sisyphus_local_packages_table_csv_post():
-    subprocess.call(['/usr/share/sisyphus-cli/helpers/make_local_csv_post']) # this is really hard to do in python, so we cheat with a bash helper script
+    subprocess.call(['/usr/share/sisyphus/helpers/make_local_csv_post']) # this is really hard to do in python, so we cheat with a bash helper script
 
 def sync_sisyphus_local_packages_table_csv():
     if filecmp.cmp(sisyphus_local_csv_path_pre, sisyphus_local_csv_path_post):
-        print("sisyphus database local_packages table is in sync with portage database, nothing to do...")
+        print(">>> Syncing 'sisyphus database local_packages table' into '/var/lib/sisyphus/db/sisyphus.db'")
+        print("/usr/bin/sqlite3 /var/lib/sisyphus/db/sisyphus.db")
+        print("Already up-to-date.")
+        print("=== Sync completed for 'sisyphus database local_packages table'")
     else:
-        print("sisyphus database local_packages table is not in sync with portage database, syncing now...")
+        print(">>> Syncing 'sisyphus database local_packages table' into '/var/lib/sisyphus/db/sisyphus.db'")
+        print("/usr/bin/sqlite3 /var/lib/sisyphus/db/sisyphus.db")
         sisyphusdb = sqlite3.connect(sisyphus_database_path)
         sisyphusdb.cursor().execute('''drop table if exists local_packages''')
         sisyphusdb.cursor().execute('''create table local_packages (category TEXT,name TEXT,version TEXT,slot TEXT,description TEXT)''')
@@ -150,6 +154,7 @@ def sync_sisyphus_local_packages_table_csv():
                 sisyphusdb.cursor().execute("insert into local_packages (category, name, version, slot, description) values (?, ?, ?, ?, ?);", row)
         sisyphusdb.commit()
         sisyphusdb.close()
+        print("=== Sync completed for 'sisyphus database local_packages table'")
     shutil.move(sisyphus_local_csv_path_post, sisyphus_local_csv_path_pre)
 
 def sisyphus_pkg_install():
