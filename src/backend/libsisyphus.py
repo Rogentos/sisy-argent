@@ -19,16 +19,17 @@ sisyphus_remote_csv_path_post = '/var/lib/sisyphus/csv/remote_postinst.csv'
 sisyphus_local_csv_path_pre = '/var/lib/sisyphus/csv/local_preinst.csv'
 sisyphus_local_csv_path_post = '/var/lib/sisyphus/csv/local_postinst.csv'
 sisyphus_database_path = '/var/lib/sisyphus/db/sisyphus.db'
+
 def check_if_root():
     if not os.getuid() == 0:
-        sys.exit("you need root permissions to do this. exiting!")
+        sys.exit("\nyou need root permissions to do this. exiting!\n")
 
 def check_if_srcmode():
     portage_srcmode_make_conf = '/opt/redcore-build/conf/intel/portage/make.conf.amd64-srcmode'
     portage_make_conf_symlink = '/etc/portage/make.conf'
 
     if os.path.islink(portage_make_conf_symlink) and os.path.realpath(portage_make_conf_symlink) == portage_srcmode_make_conf:
-        print("the system is set to srcmode (full gentoo), refusing to run!")
+        print("\nthe system is set to srcmode (full gentoo), refusing to run!\n")
         sys.exit(1)
 
 def check_redcore_portage_tree():
@@ -38,7 +39,7 @@ def check_redcore_portage_tree():
     redcore_portage_tree_remote_hash = subprocess.check_output(['git', 'rev-parse', '@{u}'])
 
     if not redcore_portage_tree_local_hash == redcore_portage_tree_remote_hash:
-        print("redcore desktop portage tree is out-of-date. run 'sisyphus update' first!")
+        print("\nredcore desktop portage tree is out-of-date. run 'sisyphus update' first!\n")
         sys.exit(1)
 
 def check_redcore_desktop_overlay():
@@ -48,7 +49,7 @@ def check_redcore_desktop_overlay():
     redcore_desktop_overlay_remote_hash = subprocess.check_output(['git', 'rev-parse', '@{u}'])
 
     if not redcore_desktop_overlay_local_hash == redcore_desktop_overlay_remote_hash:
-        print("redcore desktop overlay is out-of-date. run 'sisyphus update' first!")
+        print("\nredcore desktop overlay is out-of-date. run 'sisyphus update' first!\n")
         sys.exit(1)
 
 def check_redcore_portage_config():
@@ -58,7 +59,7 @@ def check_redcore_portage_config():
     redcore_portage_config_remote_hash = subprocess.check_output(['git', 'rev-parse', '@{u}'])
 
     if not redcore_portage_config_local_hash == redcore_portage_config_remote_hash:
-        print("redcore desktop portage config is out-of-date. run 'sisyphus update' first!")
+        print("\nredcore desktop portage config is out-of-date. run 'sisyphus update' first!\n")
         sys.exit(1)
 
 def fetch_sisyphus_remote_packages_table_csv():
@@ -74,7 +75,7 @@ def fetch_sisyphus_remote_packages_table_csv():
 
 def check_sisyphus_remote_packages_table_csv():
     if not filecmp.cmp(sisyphus_remote_csv_path_pre, sisyphus_remote_csv_path_post):
-        print("sisyphus database remote_packages table is out-of-date. run 'sisyphus update' first!")
+        print("\nsisyphus database remote_packages table is out-of-date. run 'sisyphus update' first!\n")
         os.remove(sisyphus_remote_csv_path_post)
         sys.exit(1)
     else:
@@ -232,3 +233,38 @@ def sisyphus_pkg_search():
 
 def sisyphus_pkg_system_update():
     redcore_sync()
+
+def sisyphus_pkg_belongs():
+    subprocess.call(['equery', 'belongs'] + sys.argv[2:])
+
+def sisyphus_pkg_depends():
+    subprocess.call(['equery', 'depends'] + sys.argv[:2])
+
+def sisyphus_pkg_files():
+    subprocess.call(['equery', 'files'] + sys.argv[:2])
+
+def sisyphus_pkg_sysingo():
+    subprocess.call(['emerge', '--info'])
+
+def sisyphus_pkg_help():
+    print("\nUsage : sisyphus command [package(s)] || [file(s)]\n")
+    print("Sisyphus is a simple python wrapper around portage, gentoolkit, and portage-utils that provides")
+    print("an apt-get/yum-alike interface to these commands, to assist newcomer people transitioning from")
+    print("Debian/RedHat-based systems to Gentoo.\n")
+    print("Commands :\n")
+    print("install - Install new packages")
+    print("uninstall - Uninstall packages *safely* (INFO : If reverse deps are found, package(s) will NOT be uninstalled)")
+    print("force-uninstall - Uninstall packages *unsafely* (WARNING : This option will ignore reverse deps, which may break your system)")
+    print("remove-orphans - Uninstall packages that are no longer needed")
+    print("upgrade -  Upgrade the system")
+    print("auto-install - Install new packages - no confirmation")
+    print("auto-uninstall - Uninstall packages *safely* - no confirmation (INFO : If reverse deps are found, package(s) will NOT be uninstalled)")
+    print("auto-force-uninstall - Uninstall packages *unsafely* - no confirmation (WARNING : This option will ignore reverse deps, which may break your system)")
+    print("auto-remove-orphans - Uninstall packages that are no longer needed - no confirmation")
+    print("auto-upgrade - Upgrade the system - no confirmation")
+    print("search - Search for packages")
+    print("update - Update the Portage tree, Overlay(s), Portage config files && Sisyphus database remote_packages table")
+    print("belongs - List what package FILE(s) belong to (e.g.: sisyphus belongs /usr/bin/wine -> app-emulation/wine : aka the /usr/bin/wine file belongs to the app-emulation/wine package)")
+    print("depends - List all packages directly depending on given package (e.g.: sisyphus depends wine -> app-emulation/winetricks : aka app-emulation/winetricks package depends on wine)")
+    print("files - List all files installed by package (e.g.: sisyphus files wine : will display all files installed by app-emulation/wine package)")
+    print("sysinfo - Display information about installed core packages and portage configuration")
