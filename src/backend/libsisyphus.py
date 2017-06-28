@@ -234,16 +234,7 @@ def sisyphus_pkg_search():
 def sisyphus_pkg_system_update():
     redcore_sync()
 
-def sisyphus_pkg_belongs():
-    subprocess.call(['equery', 'belongs'] + sys.argv[2:])
-
-def sisyphus_pkg_depends():
-    subprocess.call(['equery', 'depends'] + sys.argv[:2])
-
-def sisyphus_pkg_files():
-    subprocess.call(['equery', 'files'] + sys.argv[:2])
-
-def sisyphus_pkg_sysingo():
+def sisyphus_pkg_sysinfo():
     subprocess.call(['emerge', '--info'])
 
 def sisyphus_pkg_help():
@@ -264,7 +255,4 @@ def sisyphus_pkg_help():
     print("auto-upgrade - Upgrade the system - no confirmation")
     print("search - Search for packages")
     print("update - Update the Portage tree, Overlay(s), Portage config files && Sisyphus database remote_packages table")
-    print("belongs - List what package FILE(s) belong to (e.g.: sisyphus belongs /usr/bin/wine -> app-emulation/wine : aka the /usr/bin/wine file belongs to the app-emulation/wine package)")
-    print("depends - List all packages directly depending on given package (e.g.: sisyphus depends wine -> app-emulation/winetricks : aka app-emulation/winetricks package depends on wine)")
-    print("files - List all files installed by package (e.g.: sisyphus files wine : will display all files installed by app-emulation/wine package)")
     print("sysinfo - Display information about installed core packages and portage configuration")
