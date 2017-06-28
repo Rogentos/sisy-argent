@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 import sys
-import subprocess
 from libsisyphus import *
 
 check_if_srcmode()
