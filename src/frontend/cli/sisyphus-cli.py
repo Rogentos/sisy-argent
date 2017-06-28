@@ -31,12 +31,6 @@ if "__main__" == __name__:
         sisyphus_pkg_search()
     elif "update" in sys.argv[1:]:
         sisyphus_pkg_system_update()
-    elif "belongs" in sys.argv[1:]:
-        sisyphus_pkg_belongs()
-    elif "depends" in sys.argv[1:]:
-        sisyphus_pkg_depends()
-    elif "files" in sys.argv[1:]:
-        sisyphus_pkg_files()
     elif "sysinfo" in sys.argv[1:]:
         sisyphus_pkg_sysinfo()
     elif "help" in sys.argv[1:]:
