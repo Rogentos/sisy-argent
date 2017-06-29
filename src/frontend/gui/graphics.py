@@ -49,8 +49,26 @@ class Graphics(QtWidgets.QMainWindow):
                             AND a.name = i.name
                             AND a.slot = i.slot
                             WHERE  a.name IN
-                                ('gimp',
-                                'gimp-lqr')
+                                ('blender',
+                                'darktable',
+                                'gimp',
+                                'gimp-arrow-brushes',
+                                'gimp-lqr',
+                                'imagemagick',
+                                'inkscape',
+                                'krita',
+                                'librecad',
+                                'luminance-hdr',
+                                'lximage-qt',
+                                'cantarell',
+                                'corefonts',
+                                'dejavu',
+                                'liberation-fonts',
+                                'libertine',
+                                'noto',
+                                'open-sans',
+                                'roboto',
+                                'ttf-bitstream-vera')
                         ''')
             rows = cursor.fetchall()
             

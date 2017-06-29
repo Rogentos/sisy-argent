@@ -54,15 +54,6 @@ class Office(QtWidgets.QMainWindow):
                                 'wps-office',
                                 'tesseract',
                                 'okular',
-                                'cantarell',
-                                'corefonts',
-                                'dejavu',
-                                'liberation-fonts',
-                                'libertine',
-                                'noto',
-                                'open-sans',
-                                'roboto',
-                                'ttf-bitstream-vera',
                                 'qpdfview',
                                 'cups',
                                 'cups-filters',
@@ -70,7 +61,8 @@ class Office(QtWidgets.QMainWindow):
                                 'simple-scan',
                                 'cnijfilter',
                                 'cnijfilter-drivers',
-                                'hplip')
+                                'hplip',
+                                'xsane')
                         ''')
             rows = cursor.fetchall()
             
