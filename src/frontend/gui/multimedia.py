@@ -37,7 +37,21 @@ class Multimedia(QtWidgets.QMainWindow):
     def load_packages(self):
         with sqlite3.connect('/var/lib/sisyphus/db/sisyphus.db') as db:
             cursor=db.cursor()
-            cursor.execute('''SELECT * from remote_packages''')
+            cursor.execute('''SELECT
+                            a.category AS cat,
+                            a.name AS pn,
+                            a.version AS av,
+                            i.version AS iv,
+                            a.description AS descr
+                            FROM remote_packages AS a
+                            LEFT JOIN local_packages AS i
+                            ON a.category = i.category
+                            AND a.name = i.name
+                            AND a.slot = i.slot
+                            WHERE  a.name IN
+                                ('mpv',
+                                'vlc')
+                        ''')
             rows = cursor.fetchall()
             
             for row in rows:

@@ -86,7 +86,8 @@ class Internet(QtWidgets.QMainWindow):
                                 'trojita',
                                 'aircrack-ng',
                                 'wavemon',
-                                'messengerfordesktop')
+                                'messengerfordesktop',
+                                'opera-ffmpeg-codecs')
                         ''')
             rows = cursor.fetchall()
             
