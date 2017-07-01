@@ -49,9 +49,33 @@ class Accesories(QtWidgets.QMainWindow):
                             AND a.name = i.name
                             AND a.slot = i.slot
                             WHERE  a.name IN
-                                ('ark',
+                                ('conky',
+                                'qt5-fsarchiver',
                                 'featherpad',
-                                'kcalc')
+                                'mc',
+                                'screenfetch',
+                                'sl',
+                                'wgetpaste',
+                                'qtkeychain',
+                                'meteo-qt',
+                                'zenity',
+                                'ark',
+                                'kcalc',
+                                'kdialog',
+                                'krusader',
+                                'keychain',
+                                'aircrack-ng',
+                                'wavemon',
+                                'bleachbit',
+                                'grsync',
+                                'gtkdialog',
+                                'obconf-qt',
+                                'qarma',
+                                'qlipper',
+                                'albert',
+                                'copyq',
+                                'qps',
+                                'slock')
                         ''')
             rows = cursor.fetchall()
             

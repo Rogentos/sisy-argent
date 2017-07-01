@@ -49,7 +49,34 @@ class Development(QtWidgets.QMainWindow):
                             AND a.name = i.name
                             AND a.slot = i.slot
                             WHERE  a.name IN
-                                ('notepadqq',
+                                ('vasile',
+                                'dpkg',
+                                'notepadqq',
+                                'sqlitebrowser',
+                                'sqlitestudio',
+                                'fpc',
+                                'go',
+                                'lazarus',
+                                'lua',
+                                'perl',
+                                'python',
+                                'ruby',
+                                'tcl',
+                                'tk',
+                                'vala',
+                                'PyQt5',
+                                'designer',
+                                'expect',
+                                'android-tools',
+                                'cmake',
+                                'debootstrap',
+                                'geany',
+                                'geany-plugins',
+                                'bzr',
+                                'cvs',
+                                'git',
+                                'mercurial',
+                                'subversion',
                                 'qt-creator')
                         ''')
             rows = cursor.fetchall()
