@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <class>SisyphusGUI</class>
+ <widget class="QWidget" name="SisyphusGUI">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -27,493 +30,213 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>../icon/window_icon.png</normaloff>../icon/window_icon.png</iconset>
+    <normaloff>../icon/sisyphus.png</normaloff>../icon/sisyphus.png</iconset>
   </property>
-  <property name="layoutDirection">
-   <enum>Qt::LeftToRight</enum>
-  </property>
-  <property name="autoFillBackground">
-   <bool>true</bool>
-  </property>
-  <widget class="QWidget" name="sisyphus">
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
+  <widget class="QTableWidget" name="table_everything">
+   <property name="geometry">
+    <rect>
+     <x>25</x>
+     <y>25</y>
+     <width>950</width>
+     <height>500</height>
+    </rect>
    </property>
-   <widget class="QFrame" name="manage">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>0</y>
-      <width>1000</width>
-      <height>200</height>
-     </rect>
+   <property name="maximumSize">
+    <size>
+     <width>950</width>
+     <height>500</height>
+    </size>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::Panel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <property name="sizeAdjustPolicy">
+    <enum>QAbstractScrollArea::AdjustToContents</enum>
+   </property>
+   <property name="editTriggers">
+    <set>QAbstractItemView::NoEditTriggers</set>
+   </property>
+   <property name="dragDropOverwriteMode">
+    <bool>false</bool>
+   </property>
+   <property name="selectionMode">
+    <enum>QAbstractItemView::SingleSelection</enum>
+   </property>
+   <property name="selectionBehavior">
+    <enum>QAbstractItemView::SelectRows</enum>
+   </property>
+   <attribute name="horizontalHeaderCascadingSectionResizes">
+    <bool>true</bool>
+   </attribute>
+   <attribute name="horizontalHeaderDefaultSectionSize">
+    <number>110</number>
+   </attribute>
+   <attribute name="horizontalHeaderStretchLastSection">
+    <bool>true</bool>
+   </attribute>
+   <attribute name="verticalHeaderVisible">
+    <bool>false</bool>
+   </attribute>
+   <column>
+    <property name="text">
+     <string>Category</string>
     </property>
-    <property name="sizePolicy">
-     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-      <horstretch>0</horstretch>
-      <verstretch>0</verstretch>
-     </sizepolicy>
+   </column>
+   <column>
+    <property name="text">
+     <string>Name</string>
     </property>
-    <property name="layoutDirection">
-     <enum>Qt::LeftToRight</enum>
+   </column>
+   <column>
+    <property name="text">
+     <string>Available Version</string>
     </property>
-    <property name="autoFillBackground">
-     <bool>true</bool>
+   </column>
+   <column>
+    <property name="text">
+     <string>Installed Version</string>
     </property>
-    <property name="frameShape">
-     <enum>QFrame::NoFrame</enum>
+   </column>
+   <column>
+    <property name="text">
+     <string>Description</string>
     </property>
-    <property name="frameShadow">
-     <enum>QFrame::Plain</enum>
-    </property>
-    <widget class="QLineEdit" name="input">
-     <property name="geometry">
-      <rect>
-       <x>100</x>
-       <y>30</y>
-       <width>800</width>
-       <height>40</height>
-      </rect>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Enter package name you want to Search/Install/Uninstall&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="text">
-      <string>Enter package name...</string>
-     </property>
-     <property name="frame">
-      <bool>true</bool>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignJustify|Qt::AlignVCenter</set>
-     </property>
-     <property name="clearButtonEnabled">
-      <bool>true</bool>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="package_install">
-     <property name="geometry">
-      <rect>
-       <x>215</x>
-       <y>105</y>
-       <width>190</width>
-       <height>40</height>
-      </rect>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Install package(s)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="icon">
-      <iconset>
-       <normaloff>../icon/package_install.png</normaloff>../icon/package_install.png</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>32</width>
-       <height>32</height>
-      </size>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="package_search">
-     <property name="geometry">
-      <rect>
-       <x>25</x>
-       <y>105</y>
-       <width>190</width>
-       <height>40</height>
-      </rect>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Search package(s)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="icon">
-      <iconset>
-       <normaloff>../icon/package_search.png</normaloff>../icon/package_search.png</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>32</width>
-       <height>32</height>
-      </size>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="package_uninstall">
-     <property name="geometry">
-      <rect>
-       <x>405</x>
-       <y>105</y>
-       <width>190</width>
-       <height>40</height>
-      </rect>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Uninstall package(s)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="icon">
-      <iconset>
-       <normaloff>../icon/package_uninstall.png</normaloff>../icon/package_uninstall.png</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>32</width>
-       <height>32</height>
-      </size>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="system_upgrade">
-     <property name="geometry">
-      <rect>
-       <x>595</x>
-       <y>105</y>
-       <width>190</width>
-       <height>40</height>
-      </rect>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Upgrade system&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="icon">
-      <iconset>
-       <normaloff>../icon/system_upgrade.png</normaloff>../icon/system_upgrade.png</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>32</width>
-       <height>32</height>
-      </size>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="orphans_remove">
-     <property name="geometry">
-      <rect>
-       <x>785</x>
-       <y>105</y>
-       <width>190</width>
-       <height>40</height>
-      </rect>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Remove orphan packages&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="icon">
-      <iconset>
-       <normaloff>../icon/remove_orphans.png</normaloff>../icon/remove_orphans.png</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>32</width>
-       <height>32</height>
-      </size>
-     </property>
-    </widget>
-   </widget>
-   <widget class="QFrame" name="browse">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>200</y>
-      <width>1000</width>
-      <height>400</height>
-     </rect>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::NoFrame</enum>
-    </property>
-    <property name="frameShadow">
-     <enum>QFrame::Plain</enum>
-    </property>
-    <widget class="QPushButton" name="category_accesories">
-     <property name="geometry">
-      <rect>
-       <x>25</x>
-       <y>20</y>
-       <width>150</width>
-       <height>150</height>
-      </rect>
-     </property>
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Browse Accesories Category&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="icon">
-      <iconset>
-       <normaloff>../icon/category_accessories.png</normaloff>../icon/category_accessories.png</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>64</width>
-       <height>64</height>
-      </size>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="category_games">
-     <property name="geometry">
-      <rect>
-       <x>425</x>
-       <y>20</y>
-       <width>150</width>
-       <height>150</height>
-      </rect>
-     </property>
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Browse Games Category&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="icon">
-      <iconset>
-       <normaloff>../icon/category_games.png</normaloff>../icon/category_games.png</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>64</width>
-       <height>64</height>
-      </size>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="category_graphics">
-     <property name="geometry">
-      <rect>
-       <x>625</x>
-       <y>20</y>
-       <width>150</width>
-       <height>150</height>
-      </rect>
-     </property>
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Browse Graphics Category&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="icon">
-      <iconset>
-       <normaloff>../icon/category_graphics.png</normaloff>../icon/category_graphics.png</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>64</width>
-       <height>64</height>
-      </size>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="category_internet">
-     <property name="geometry">
-      <rect>
-       <x>825</x>
-       <y>20</y>
-       <width>150</width>
-       <height>150</height>
-      </rect>
-     </property>
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Browse Internet Category&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="icon">
-      <iconset>
-       <normaloff>../icon/category_internet.png</normaloff>../icon/category_internet.png</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>64</width>
-       <height>64</height>
-      </size>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="category_multimedia">
-     <property name="geometry">
-      <rect>
-       <x>25</x>
-       <y>215</y>
-       <width>150</width>
-       <height>150</height>
-      </rect>
-     </property>
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Browse Multimedia Category&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="icon">
-      <iconset>
-       <normaloff>../icon/category_multimedia.png</normaloff>../icon/category_multimedia.png</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>64</width>
-       <height>64</height>
-      </size>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="category_office">
-     <property name="geometry">
-      <rect>
-       <x>225</x>
-       <y>215</y>
-       <width>150</width>
-       <height>150</height>
-      </rect>
-     </property>
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Browse Office Category&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="icon">
-      <iconset>
-       <normaloff>../icon/category_office.png</normaloff>../icon/category_office.png</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>64</width>
-       <height>64</height>
-      </size>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="category_system">
-     <property name="geometry">
-      <rect>
-       <x>425</x>
-       <y>215</y>
-       <width>150</width>
-       <height>150</height>
-      </rect>
-     </property>
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Browse System Category&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="icon">
-      <iconset>
-       <normaloff>../icon/category_system.png</normaloff>../icon/category_system.png</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>64</width>
-       <height>64</height>
-      </size>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="category_development">
-     <property name="geometry">
-      <rect>
-       <x>225</x>
-       <y>20</y>
-       <width>150</width>
-       <height>150</height>
-      </rect>
-     </property>
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Browse Development Category&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="icon">
-      <iconset>
-       <normaloff>../icon/category_development.png</normaloff>../icon/category_development.png</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>64</width>
-       <height>64</height>
-      </size>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="category_everything">
-     <property name="geometry">
-      <rect>
-       <x>625</x>
-       <y>215</y>
-       <width>150</width>
-       <height>150</height>
-      </rect>
-     </property>
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Browse All Packages&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="icon">
-      <iconset>
-       <normaloff>../icon/category_all.png</normaloff>../icon/category_all.png</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>64</width>
-       <height>64</height>
-      </size>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="category_local">
-     <property name="geometry">
-      <rect>
-       <x>825</x>
-       <y>215</y>
-       <width>150</width>
-       <height>150</height>
-      </rect>
-     </property>
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Browse Installed Packages&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="icon">
-      <iconset>
-       <normaloff>../icon/category_local.png</normaloff>../icon/category_local.png</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>64</width>
-       <height>64</height>
-      </size>
-     </property>
-    </widget>
-   </widget>
+   </column>
+  </widget>
+  <widget class="QPushButton" name="package_uninstall">
+   <property name="geometry">
+    <rect>
+     <x>225</x>
+     <y>550</y>
+     <width>150</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Uninstall package&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../icon/uninstall.png</normaloff>../icon/uninstall.png</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>32</width>
+     <height>32</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="orphans_remove">
+   <property name="geometry">
+    <rect>
+     <x>425</x>
+     <y>550</y>
+     <width>150</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Remove orphan packages&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../icon/orphans.png</normaloff>../icon/orphans.png</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>32</width>
+     <height>32</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="sisyphus_exit">
+   <property name="geometry">
+    <rect>
+     <x>825</x>
+     <y>550</y>
+     <width>150</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Exit Sisyphus&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../icon/exit.png</normaloff>../icon/exit.png</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>32</width>
+     <height>32</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="package_install">
+   <property name="geometry">
+    <rect>
+     <x>25</x>
+     <y>550</y>
+     <width>150</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Install package&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../icon/install.png</normaloff>../icon/install.png</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>32</width>
+     <height>32</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="system_upgrade">
+   <property name="geometry">
+    <rect>
+     <x>625</x>
+     <y>550</y>
+     <width>150</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Upgrade system&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../icon/upgrade.png</normaloff>../icon/upgrade.png</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>32</width>
+     <height>32</height>
+    </size>
+   </property>
   </widget>
  </widget>
  <tabstops>
-  <tabstop>input</tabstop>
-  <tabstop>package_search</tabstop>
+  <tabstop>table_everything</tabstop>
   <tabstop>package_install</tabstop>
   <tabstop>package_uninstall</tabstop>
-  <tabstop>system_upgrade</tabstop>
   <tabstop>orphans_remove</tabstop>
-  <tabstop>category_accesories</tabstop>
-  <tabstop>category_development</tabstop>
-  <tabstop>category_games</tabstop>
-  <tabstop>category_graphics</tabstop>
-  <tabstop>category_internet</tabstop>
-  <tabstop>category_multimedia</tabstop>
-  <tabstop>category_office</tabstop>
-  <tabstop>category_system</tabstop>
-  <tabstop>category_local</tabstop>
-  <tabstop>category_everything</tabstop>
+  <tabstop>sisyphus_exit</tabstop>
  </tabstops>
  <resources/>
  <connections/>

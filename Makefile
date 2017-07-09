@@ -38,7 +38,6 @@ install:
 	install -m 0644 org.redcorelinux.sisyphus-gui.policy $(DESTDIR)$(POLKITDIR)/
 
 uninstall:
-	rm -rf $(DESTDIR)$(UBINDIR)/sisyphus-cli.sh
 	rm -rf $(DESTDIR)$(UBINDIR)/sisyphus-cli.py
 	rm -rf $(DESTDIR)$(UBINDIR)/sisyphus-gui
 	rm -rf $(DESTDIR)$(UBINDIR)/sisyphus-gui-pkexec
