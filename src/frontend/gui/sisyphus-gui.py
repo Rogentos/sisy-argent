@@ -11,6 +11,8 @@ class Sisyphus(QtWidgets.QMainWindow):
         self.centerOnScreen()
         self.show()
         self.load_packages()
+
+        self.input.returnPressed.connect(self.filter_database)
     
         self.install.clicked.connect(self.install_package)
         self.uninstall.clicked.connect(self.uninstall_package)
@@ -42,6 +44,15 @@ class Sisyphus(QtWidgets.QMainWindow):
 
     def exit_sisyphus(self):
         self.close()
+
+    def filter_database(self):
+        items = self.database.findItems(self.input.text(), QtCore.Qt.MatchExactly)
+        if items:
+            for item in items:
+                results = ''.join('%d' % (item.row() + 0)).split()
+                coordinates = map(int, results)
+                for coordinate in coordinates:
+                    self.database.setCurrentCell(coordinate, 0)
  
     def load_packages(self):
         with sqlite3.connect('/var/lib/sisyphus/db/sisyphus.db') as db:
