@@ -12,11 +12,11 @@ class Sisyphus(QtWidgets.QMainWindow):
         self.show()
         self.load_packages()
     
-        self.package_install.clicked.connect(self.install_package)
-        self.package_uninstall.clicked.connect(self.uninstall_package)
-        self.orphans_remove.clicked.connect(self.remove_orphans)
-        self.system_upgrade.clicked.connect(self.upgrade_system)
-        self.sisyphus_exit.clicked.connect(self.exit_sisyphus)
+        self.install.clicked.connect(self.install_package)
+        self.uninstall.clicked.connect(self.uninstall_package)
+        self.orphans.clicked.connect(self.remove_orphans)
+        self.upgrade.clicked.connect(self.upgrade_system)
+        self.abort.clicked.connect(self.exit_sisyphus)
     
     def centerOnScreen(self):
         resolution = QtWidgets.QDesktopWidget().screenGeometry()
@@ -24,11 +24,11 @@ class Sisyphus(QtWidgets.QMainWindow):
                     (resolution.height() / 2) - (self.frameSize().height() / 2))
     
     def install_package(self):
-        pkgname = self.table_everything.item(self.table_everything.currentRow(), 1).text()
+        pkgname = self.database.item(self.database.currentRow(), 1).text()
         subprocess.Popen(['xterm', '-e', 'sisyphus', 'auto-install'] + pkgname.split())
 
     def uninstall_package(self):
-        pkgname = self.table_everything.item(self.table_everything.currentRow(), 1).text()
+        pkgname = self.database.item(self.database.currentRow(), 1).text()
         subprocess.Popen(['xterm', '-e', 'sisyphus', 'auto-uninstall'] + pkgname.split())
 
     def remove_orphans(self):
@@ -62,12 +62,12 @@ class Sisyphus(QtWidgets.QMainWindow):
             
             for row in rows:
                 inx = rows.index(row)
-                self.table_everything.insertRow(inx)
-                self.table_everything.setItem(inx, 0, QtWidgets.QTableWidgetItem(row[0]))
-                self.table_everything.setItem(inx, 1, QtWidgets.QTableWidgetItem(row[1]))
-                self.table_everything.setItem(inx, 2, QtWidgets.QTableWidgetItem(row[2]))
-                self.table_everything.setItem(inx, 3, QtWidgets.QTableWidgetItem(row[3]))
-                self.table_everything.setItem(inx, 4, QtWidgets.QTableWidgetItem(row[4]))
+                self.database.insertRow(inx)
+                self.database.setItem(inx, 0, QtWidgets.QTableWidgetItem(row[0]))
+                self.database.setItem(inx, 1, QtWidgets.QTableWidgetItem(row[1]))
+                self.database.setItem(inx, 2, QtWidgets.QTableWidgetItem(row[2]))
+                self.database.setItem(inx, 3, QtWidgets.QTableWidgetItem(row[3]))
+                self.database.setItem(inx, 4, QtWidgets.QTableWidgetItem(row[4]))
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
