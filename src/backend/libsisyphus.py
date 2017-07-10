@@ -22,44 +22,44 @@ sisyphus_database_path = '/var/lib/sisyphus/db/sisyphus.db'
 
 def check_if_root():
     if not os.getuid() == 0:
-        sys.exit("\nyou need root permissions to do this. exiting!\n")
+        sys.exit("\nYou need root permissions to do this, exiting!\n")
 
 def check_if_srcmode():
     portage_srcmode_make_conf = '/opt/redcore-build/conf/intel/portage/make.conf.amd64-srcmode'
     portage_make_conf_symlink = '/etc/portage/make.conf'
 
     if os.path.islink(portage_make_conf_symlink) and os.path.realpath(portage_make_conf_symlink) == portage_srcmode_make_conf:
-        print("\nthe system is set to srcmode (full gentoo), refusing to run!\n")
+        print("\nThe system is set to srcmode (full gentoo), refusing to run!\n")
         sys.exit(1)
 
 def check_redcore_portage_tree():
     os.chdir(redcore_portage_tree_path)
-    subprocess.call(['git', 'remote', 'update'])
+    subprocess.call(['git', 'remote', 'update', '>', '/dev/null', '2>&1'])
     redcore_portage_tree_local_hash = subprocess.check_output(['git', 'rev-parse', '@'])
     redcore_portage_tree_remote_hash = subprocess.check_output(['git', 'rev-parse', '@{u}'])
 
     if not redcore_portage_tree_local_hash == redcore_portage_tree_remote_hash:
-        print("\nredcore desktop portage tree is out-of-date. run 'sisyphus update' first!\n")
+        print("\nPortage tree is out-of-date, run 'sisyphus update' first!\n")
         sys.exit(1)
 
 def check_redcore_desktop_overlay():
     os.chdir(redcore_desktop_overlay_path)
-    subprocess.call(['git', 'remote', 'update'])
+    subprocess.call(['git', 'remote', 'update', '>', '/dev/null', '2>&1'])
     redcore_desktop_overlay_local_hash = subprocess.check_output(['git', 'rev-parse', '@'])
     redcore_desktop_overlay_remote_hash = subprocess.check_output(['git', 'rev-parse', '@{u}'])
 
     if not redcore_desktop_overlay_local_hash == redcore_desktop_overlay_remote_hash:
-        print("\nredcore desktop overlay is out-of-date. run 'sisyphus update' first!\n")
+        print("\nOverlay is out-of-date, run 'sisyphus update' first!\n")
         sys.exit(1)
 
 def check_redcore_portage_config():
     os.chdir(redcore_portage_config_path)
-    subprocess.call(['git', 'remote', 'update'])
+    subprocess.call(['git', 'remote', 'update', '>', '/dev/null', '2>&1'])
     redcore_portage_config_local_hash = subprocess.check_output(['git', 'rev-parse', '@'])
     redcore_portage_config_remote_hash = subprocess.check_output(['git', 'rev-parse', '@{u}'])
 
     if not redcore_portage_config_local_hash == redcore_portage_config_remote_hash:
-        print("\nredcore desktop portage config is out-of-date. run 'sisyphus update' first!\n")
+        print("\nPortage config is out-of-date, run 'sisyphus update' first!\n")
         sys.exit(1)
 
 def fetch_sisyphus_remote_packages_table_csv():
@@ -75,7 +75,7 @@ def fetch_sisyphus_remote_packages_table_csv():
 
 def check_sisyphus_remote_packages_table_csv():
     if not filecmp.cmp(sisyphus_remote_csv_path_pre, sisyphus_remote_csv_path_post):
-        print("\nsisyphus database remote_packages table is out-of-date. run 'sisyphus update' first!\n")
+        print("\nSisyphus database is out-of-date, run 'sisyphus update' first!\n")
         os.remove(sisyphus_remote_csv_path_post)
         sys.exit(1)
     else:
@@ -93,19 +93,14 @@ def check_sync():
     check_sisyphus_remote_packages_table()
 
 def sync_redcore_portage_tree_and_desktop_overlay():
-    subprocess.call(['emerge', '--sync'])
+    subprocess.call(['emerge', '--sync', '--quiet'])
 
 def sync_redcore_portage_config():
     os.chdir(redcore_portage_config_path)
-    print(">>> Syncing 'portage config' into '/etc/portage'...")
-    print("/usr/bin/git pull")
-    subprocess.call(['git', 'pull'])
-    print("=== Sync completed for 'portage config'")
+    subprocess.call(['git', 'pull', '>', '/dev/null', '2>&1'])
 
 def sync_sisyphus_remote_packages_table_csv():
     if not filecmp.cmp(sisyphus_remote_csv_path_pre, sisyphus_remote_csv_path_post):
-        print(">>> Syncing 'sisyphus database remote_packages table' into '/var/lib/sisyphus/db/sisyphus.db'")
-        print("/usr/bin/sqlite3 /var/lib/sisyphus/db/sisyphus.db")
         sisyphusdb = sqlite3.connect(sisyphus_database_path)
         sisyphusdb.cursor().execute('''drop table if exists remote_packages''')
         sisyphusdb.cursor().execute('''create table remote_packages (category TEXT,name TEXT,version TEXT,slot TEXT,description TEXT)''')
@@ -114,12 +109,6 @@ def sync_sisyphus_remote_packages_table_csv():
                 sisyphusdb.cursor().execute("insert into remote_packages (category, name, version, slot, description) values (?, ?, ?, ?, ?);", row)
         sisyphusdb.commit()
         sisyphusdb.close()
-        print("=== Sync completed for 'sisyphus database remote_packages table'")
-    else:
-        print(">>> Syncing 'sisyphus database remote_packages table' into '/var/lib/sisyphus/db/sisyphus.db'")
-        print("/usr/bin/sqlite3 /var/lib/sisyphus/db/sisyphus.db")
-        print("Already up-to-date.")
-        print("=== Sync completed for 'sisyphus database remote_packages table'")
     shutil.move(sisyphus_remote_csv_path_post, sisyphus_remote_csv_path_pre)
         
 def sync_sisyphus_database_remote_packages_table():
@@ -131,6 +120,7 @@ def redcore_sync():
     sync_redcore_portage_tree_and_desktop_overlay()
     sync_redcore_portage_config()
     sync_sisyphus_database_remote_packages_table()
+    print("\nw00t : System update complete!\n")
 
 def generate_sisyphus_local_packages_table_csv_pre():
     subprocess.call(['/usr/share/sisyphus/helpers/make_local_csv_pre']) # this is really hard to do in python, so we cheat with a bash helper script
@@ -139,14 +129,7 @@ def generate_sisyphus_local_packages_table_csv_post():
     subprocess.call(['/usr/share/sisyphus/helpers/make_local_csv_post']) # this is really hard to do in python, so we cheat with a bash helper script
 
 def sync_sisyphus_local_packages_table_csv():
-    if filecmp.cmp(sisyphus_local_csv_path_pre, sisyphus_local_csv_path_post):
-        print(">>> Syncing 'sisyphus database local_packages table' into '/var/lib/sisyphus/db/sisyphus.db'")
-        print("/usr/bin/sqlite3 /var/lib/sisyphus/db/sisyphus.db")
-        print("Already up-to-date.")
-        print("=== Sync completed for 'sisyphus database local_packages table'")
-    else:
-        print(">>> Syncing 'sisyphus database local_packages table' into '/var/lib/sisyphus/db/sisyphus.db'")
-        print("/usr/bin/sqlite3 /var/lib/sisyphus/db/sisyphus.db")
+    if not filecmp.cmp(sisyphus_local_csv_path_pre, sisyphus_local_csv_path_post):
         sisyphusdb = sqlite3.connect(sisyphus_database_path)
         sisyphusdb.cursor().execute('''drop table if exists local_packages''')
         sisyphusdb.cursor().execute('''create table local_packages (category TEXT,name TEXT,version TEXT,slot TEXT,description TEXT)''')
@@ -155,7 +138,6 @@ def sync_sisyphus_local_packages_table_csv():
                 sisyphusdb.cursor().execute("insert into local_packages (category, name, version, slot, description) values (?, ?, ?, ?, ?);", row)
         sisyphusdb.commit()
         sisyphusdb.close()
-        print("=== Sync completed for 'sisyphus database local_packages table'")
     shutil.move(sisyphus_local_csv_path_post, sisyphus_local_csv_path_pre)
 
 def sisyphus_pkg_install():

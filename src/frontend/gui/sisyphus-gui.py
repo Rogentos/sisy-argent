@@ -34,7 +34,7 @@ class Sisyphus(QtWidgets.QMainWindow):
         subprocess.Popen(['xterm', '-e', 'sisyphus', 'auto-uninstall'] + pkgname.split())
 
     def remove_orphans(self):
-        subprocess.Popen(['xterm', '-e', 'sisyphus', 'remove-orphans'])
+        subprocess.Popen(['xterm', '-e', 'sisyphus', 'auto-remove-orphans'])
 
     def upgrade_system(self):
         subprocess.Popen(['xterm', '-e', 'sisyphus', 'auto-upgrade'])
