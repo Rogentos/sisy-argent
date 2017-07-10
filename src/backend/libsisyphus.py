@@ -97,7 +97,7 @@ def sync_redcore_portage_tree_and_desktop_overlay():
 
 def sync_redcore_portage_config():
     os.chdir(redcore_portage_config_path)
-    subprocess.call(['git', 'pull'])
+    subprocess.call(['git', 'pull', '--quiet'])
 
 def sync_sisyphus_remote_packages_table_csv():
     if not filecmp.cmp(sisyphus_remote_csv_path_pre, sisyphus_remote_csv_path_post):
@@ -120,7 +120,6 @@ def redcore_sync():
     sync_redcore_portage_tree_and_desktop_overlay()
     sync_redcore_portage_config()
     sync_sisyphus_database_remote_packages_table()
-    print("\nw00t : System update complete!\n")
 
 def generate_sisyphus_local_packages_table_csv_pre():
     subprocess.call(['/usr/share/sisyphus/helpers/make_local_csv_pre']) # this is really hard to do in python, so we cheat with a bash helper script
