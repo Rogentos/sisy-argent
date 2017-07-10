@@ -34,7 +34,7 @@ def check_if_srcmode():
 
 def check_redcore_portage_tree():
     os.chdir(redcore_portage_tree_path)
-    subprocess.call(['git', 'remote', 'update', '>', '/dev/null', '2>&1'])
+    subprocess.call(['git', 'remote', 'update'])
     redcore_portage_tree_local_hash = subprocess.check_output(['git', 'rev-parse', '@'])
     redcore_portage_tree_remote_hash = subprocess.check_output(['git', 'rev-parse', '@{u}'])
 
@@ -44,7 +44,7 @@ def check_redcore_portage_tree():
 
 def check_redcore_desktop_overlay():
     os.chdir(redcore_desktop_overlay_path)
-    subprocess.call(['git', 'remote', 'update', '>', '/dev/null', '2>&1'])
+    subprocess.call(['git', 'remote', 'update'])
     redcore_desktop_overlay_local_hash = subprocess.check_output(['git', 'rev-parse', '@'])
     redcore_desktop_overlay_remote_hash = subprocess.check_output(['git', 'rev-parse', '@{u}'])
 
@@ -54,7 +54,7 @@ def check_redcore_desktop_overlay():
 
 def check_redcore_portage_config():
     os.chdir(redcore_portage_config_path)
-    subprocess.call(['git', 'remote', 'update', '>', '/dev/null', '2>&1'])
+    subprocess.call(['git', 'remote', 'update'])
     redcore_portage_config_local_hash = subprocess.check_output(['git', 'rev-parse', '@'])
     redcore_portage_config_remote_hash = subprocess.check_output(['git', 'rev-parse', '@{u}'])
 
@@ -97,7 +97,7 @@ def sync_redcore_portage_tree_and_desktop_overlay():
 
 def sync_redcore_portage_config():
     os.chdir(redcore_portage_config_path)
-    subprocess.call(['git', 'pull', '>', '/dev/null', '2>&1'])
+    subprocess.call(['git', 'pull'])
 
 def sync_sisyphus_remote_packages_table_csv():
     if not filecmp.cmp(sisyphus_remote_csv_path_pre, sisyphus_remote_csv_path_post):
