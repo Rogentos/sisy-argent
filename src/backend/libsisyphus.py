@@ -8,6 +8,8 @@ import sqlite3
 import sys
 import urllib3
 import subprocess
+import animation
+import time
 
 redcore_portage_tree_path = '/usr/portage'
 redcore_desktop_overlay_path = '/var/lib/layman/redcore-desktop'
@@ -115,6 +117,7 @@ def sync_sisyphus_database_remote_packages_table():
     fetch_sisyphus_remote_packages_table_csv()
     sync_sisyphus_remote_packages_table_csv()
 
+@animation.wait('working')
 def redcore_sync():
     check_if_root()
     sync_redcore_portage_tree_and_desktop_overlay()
