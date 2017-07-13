@@ -30,6 +30,8 @@ if "__main__" == __name__:
         sisyphus_pkg_search()
     elif "update" in sys.argv[1:]:
         sisyphus_pkg_system_update()
+    elif "spmsync" in sys.argv[1:]:
+        sisyphus_pkg_spmsync()
     elif "sysinfo" in sys.argv[1:]:
         sisyphus_pkg_sysinfo()
     elif "help" in sys.argv[1:]:

@@ -20,6 +20,7 @@ sisyphus_remote_csv_path_pre = '/var/lib/sisyphus/csv/remote_preinst.csv'
 sisyphus_remote_csv_path_post = '/var/lib/sisyphus/csv/remote_postinst.csv'
 sisyphus_local_csv_path_pre = '/var/lib/sisyphus/csv/local_preinst.csv'
 sisyphus_local_csv_path_post = '/var/lib/sisyphus/csv/local_postinst.csv'
+sisyphus_spm_csv_path = '/var/lib/sisyphus/csv/spmsync.csv'
 sisyphus_database_path = '/var/lib/sisyphus/db/sisyphus.db'
 
 def check_if_root():
@@ -142,6 +143,24 @@ def sync_sisyphus_local_packages_table_csv():
         sisyphusdb.close()
     shutil.move(sisyphus_local_csv_path_post, sisyphus_local_csv_path_pre)
 
+def generate_sisyphus_spm_csv():
+    subprocess.call(['/usr/share/sisyphus/helpers/make_spmsync_csv']) # this is really hard to do in python, so we cheat using a bash helper script
+
+def sync_sisyphus_spm_csv():
+    sisyphusdb = sqlite3.connect(sisyphus_database_path)
+    sisyphusdb.cursor().execute('''drop table if exists local_packages''')
+    sisyphusdb.cursor().execute('''create table local_packages (category TEXT,name TEXT,version TEXT,slot TEXT,description TEXT)''')
+    with open(sisyphus_spm_csv_path) as sisyphus_spm_csv:
+        for row in csv.reader(sisyphus_spm_csv):
+            sisyphusdb.cursor().execute("insert into local_packages (category, name, version, slot, description) values (?, ?, ?, ?, ?);", row)
+        sisyphusdb.commit()
+        sisyphusdb.close()
+    os.remove(sisyphus_spm_csv_path)
+
+def sisyphus_pkg_spmsync():
+    generate_sisyphus_spm_csv()
+    sync_sisyphus_spm_csv()
+
 def sisyphus_pkg_install():
     check_sync()
     generate_sisyphus_local_packages_table_csv_pre()
@@ -239,4 +258,5 @@ def sisyphus_pkg_help():
     print("auto-upgrade - Upgrade the system - no confirmation")
     print("search - Search for packages")
     print("update - Update the Portage tree, Overlay(s), Portage config files && Sisyphus database remote_packages table")
+    print("spmsync - Sync Sisyphus database with Portage database (if you install something with Portage, not Sisyphus)")
     print("sysinfo - Display information about installed core packages and portage configuration")
