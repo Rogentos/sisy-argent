@@ -95,13 +95,16 @@ def check_sync():
     check_redcore_portage_config()
     check_sisyphus_remote_packages_table()
 
+@animation.wait('fetching remote ebuilds')
 def sync_redcore_portage_tree_and_desktop_overlay():
     subprocess.call(['emerge', '--sync', '--quiet'])
 
+@animation.wait('fetching remote configs')
 def sync_redcore_portage_config():
     os.chdir(redcore_portage_config_path)
     subprocess.call(['git', 'pull', '--quiet'])
 
+@animation.wait('fetching remote database')
 def sync_sisyphus_remote_packages_table_csv():
     if not filecmp.cmp(sisyphus_remote_csv_path_pre, sisyphus_remote_csv_path_post):
         sisyphusdb = sqlite3.connect(sisyphus_database_path)
@@ -118,7 +121,6 @@ def sync_sisyphus_database_remote_packages_table():
     fetch_sisyphus_remote_packages_table_csv()
     sync_sisyphus_remote_packages_table_csv()
 
-@animation.wait('working')
 def redcore_sync():
     check_if_root()
     sync_redcore_portage_tree_and_desktop_overlay()
@@ -157,6 +159,7 @@ def sync_sisyphus_spm_csv():
         sisyphusdb.close()
     os.remove(sisyphus_spm_csv_path)
 
+@animation.wait('syncing databases')
 def sisyphus_pkg_spmsync():
     generate_sisyphus_spm_csv()
     sync_sisyphus_spm_csv()
