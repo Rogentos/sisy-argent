@@ -27,13 +27,22 @@ def check_if_root():
     if not os.getuid() == 0:
         sys.exit("\nYou need root permissions to do this, exiting!\n")
 
-def check_if_srcmode():
-    portage_srcmode_make_conf = '/opt/redcore-build/conf/intel/portage/make.conf.amd64-srcmode'
+def check_system_mode():
+    portage_binmode_make_conf = '/opt/redcore-build/conf/intel/portage/make.conf.amd64-binmode'
+    portage_mixedmode_make_conf = '/opt/redcore-build/conf/intel/portage/make.conf.amd64-mixedmode'
     portage_make_conf_symlink = '/etc/portage/make.conf'
 
-    if os.path.islink(portage_make_conf_symlink) and os.path.realpath(portage_make_conf_symlink) == portage_srcmode_make_conf:
-        print("\nThe system is set to srcmode (full gentoo), refusing to run!\n")
+    if not os.path.islink(portage_make_conf_symlink):
+        print("\nmake.conf is not a symlink, refusing to run!\n")
         sys.exit(1)
+    else:
+        if os.path.realpath(portage_make_conf_symlink) == portage_binmode_make_conf:
+            pass
+        elif os.path.realpath(portage_make_conf_symlink) == portage_mixedmode_make_conf:
+            pass
+        else:
+            print("\nThe system is not set to binmode or mixedmode, refusing to run!\n")
+            sys.exit(1)
 
 def check_redcore_portage_tree():
     os.chdir(redcore_portage_tree_path)

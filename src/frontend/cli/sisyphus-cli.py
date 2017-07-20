@@ -3,7 +3,7 @@
 import sys
 from libsisyphus import *
 
-check_if_srcmode()
+check_system_mode()
 
 if "__main__" == __name__:
     if "install" in sys.argv[1:]:
