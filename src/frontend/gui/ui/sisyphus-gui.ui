@@ -239,8 +239,8 @@
      <height>25</height>
     </rect>
    </property>
-   <property name="text">
-    <string>Enter package name...</string>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Type in package name&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="clearButtonEnabled">
     <bool>true</bool>

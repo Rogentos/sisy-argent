@@ -12,7 +12,7 @@ class Sisyphus(QtWidgets.QMainWindow):
         self.show()
         self.load_packages()
 
-        self.input.returnPressed.connect(self.filter_database)
+        self.input.textEdited.connect(self.filter_database)
     
         self.install.clicked.connect(self.install_package)
         self.uninstall.clicked.connect(self.uninstall_package)
