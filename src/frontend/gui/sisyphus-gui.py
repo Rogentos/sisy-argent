@@ -12,7 +12,7 @@ class Sisyphus(QtWidgets.QMainWindow):
         self.show()
         self.load_packages()
 
-        self.input.textEdited.connect(self.filter_database)
+        self.input.returnPressed.connect(self.filter_database)
     
         self.install.clicked.connect(self.install_package)
         self.uninstall.clicked.connect(self.uninstall_package)
@@ -53,6 +53,8 @@ class Sisyphus(QtWidgets.QMainWindow):
                 coordinates = map(int, results)
                 for coordinate in coordinates:
                     self.database.setCurrentCell(coordinate, 0)
+        else:
+            self.input.setText("There are no packages with that name...")
  
     def load_packages(self):
         with sqlite3.connect('/var/lib/sisyphus/db/sisyphus.db') as db:
