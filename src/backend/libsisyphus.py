@@ -23,6 +23,8 @@ sisyphus_local_csv_path_post = '/var/lib/sisyphus/csv/local_postinst.csv'
 sisyphus_spm_csv_path = '/var/lib/sisyphus/csv/spmsync.csv'
 sisyphus_database_path = '/var/lib/sisyphus/db/sisyphus.db'
 
+BLACKHOLE = open(os.devnull, 'w')
+
 def check_if_root():
     if not os.getuid() == 0:
         sys.exit("\nYou need root permissions to do this, exiting!\n")
@@ -46,7 +48,7 @@ def check_system_mode():
 
 def check_redcore_portage_tree():
     os.chdir(redcore_portage_tree_path)
-    subprocess.call(['git', 'remote', 'update'])
+    subprocess.call(['git', 'remote', 'update'], stdout=BLACKHOLE, stderr=subprocess.STDOUT)
     redcore_portage_tree_local_hash = subprocess.check_output(['git', 'rev-parse', '@'])
     redcore_portage_tree_remote_hash = subprocess.check_output(['git', 'rev-parse', '@{u}'])
 
@@ -56,7 +58,7 @@ def check_redcore_portage_tree():
 
 def check_redcore_desktop_overlay():
     os.chdir(redcore_desktop_overlay_path)
-    subprocess.call(['git', 'remote', 'update'])
+    subprocess.call(['git', 'remote', 'update'], stdout=BLACKHOLE, stderr=subprocess.STDOUT)
     redcore_desktop_overlay_local_hash = subprocess.check_output(['git', 'rev-parse', '@'])
     redcore_desktop_overlay_remote_hash = subprocess.check_output(['git', 'rev-parse', '@{u}'])
 
@@ -66,7 +68,7 @@ def check_redcore_desktop_overlay():
 
 def check_redcore_portage_config():
     os.chdir(redcore_portage_config_path)
-    subprocess.call(['git', 'remote', 'update'])
+    subprocess.call(['git', 'remote', 'update'], stdout=BLACKHOLE, stderr=subprocess.STDOUT)
     redcore_portage_config_local_hash = subprocess.check_output(['git', 'rev-parse', '@'])
     redcore_portage_config_remote_hash = subprocess.check_output(['git', 'rev-parse', '@{u}'])
 
