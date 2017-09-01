@@ -3,8 +3,6 @@ import sys, subprocess, sqlite3
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from libsisyphus import *
 
-PKGLIST = self.database.item(self.database.currentRow(), 1).text()
-
 class Sisyphus(QtWidgets.QMainWindow):
     def __init__(self):
         super(Sisyphus, self).__init__()
@@ -28,9 +26,11 @@ class Sisyphus(QtWidgets.QMainWindow):
                     (resolution.height() / 2) - (self.frameSize().height() / 2))
     
     def install_package(self):
+        PKGLIST = self.database.item(self.database.currentRow(), 1).text()
         sisyphus_pkg_auto_install(PKGLIST.split())
 
     def uninstall_package(self):
+        PKGLIST = self.database.item(self.database.currentRow(), 1).text()
         sisyphus_pkg_auto_uninstall(PKGLIST.split())
 
     def remove_orphans(self):
