@@ -3,6 +3,8 @@ import sys, subprocess, sqlite3
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from libsisyphus import *
 
+PKGLIST = self.database.item(self.database.currentRow(), 1).text()
+
 class Sisyphus(QtWidgets.QMainWindow):
     def __init__(self):
         super(Sisyphus, self).__init__()
@@ -26,18 +28,16 @@ class Sisyphus(QtWidgets.QMainWindow):
                     (resolution.height() / 2) - (self.frameSize().height() / 2))
     
     def install_package(self):
-        pkgname = self.database.item(self.database.currentRow(), 1).text()
-        subprocess.Popen(['xterm', '-e', 'sisyphus', 'auto-install'] + pkgname.split())
+        sisyphus_pkg_auto_install(PKGLIST.split())
 
     def uninstall_package(self):
-        pkgname = self.database.item(self.database.currentRow(), 1).text()
-        subprocess.Popen(['xterm', '-e', 'sisyphus', 'auto-uninstall'] + pkgname.split())
+        sisyphus_pkg_auto_uninstall(PKGLIST.split())
 
     def remove_orphans(self):
-        subprocess.Popen(['xterm', '-e', 'sisyphus', 'auto-remove-orphans'])
+        sisyphus_pkg_auto_remove_orphans()
 
     def upgrade_system(self):
-        subprocess.Popen(['xterm', '-e', 'sisyphus', 'auto-upgrade'])
+        sisyphus_pkg_auto_system_upgrade()
 
     def refresh_database(self):
         sisyphus_pkg_system_update()

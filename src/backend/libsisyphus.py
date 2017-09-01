@@ -175,24 +175,24 @@ def sisyphus_pkg_spmsync():
     generate_sisyphus_spm_csv()
     sync_sisyphus_spm_csv()
 
-def sisyphus_pkg_install():
+def sisyphus_pkg_install(PKGLIST):
     check_sync()
     generate_sisyphus_local_packages_table_csv_pre()
-    subprocess.call(['emerge', '-a'] + sys.argv[2:])
+    subprocess.call(['emerge', '-a'] + PKGLIST)
     generate_sisyphus_local_packages_table_csv_post()
     sync_sisyphus_local_packages_table_csv()
 
-def sisyphus_pkg_uninstall():
+def sisyphus_pkg_uninstall(PKGLIST):
     check_sync()
     generate_sisyphus_local_packages_table_csv_pre()
-    subprocess.call(['emerge', '--depclean', '-a'] + sys.argv[2:])
+    subprocess.call(['emerge', '--depclean', '-a'] + PKGLIST)
     generate_sisyphus_local_packages_table_csv_post()
     sync_sisyphus_local_packages_table_csv()
 
-def sisyphus_pkg_force_uninstall():
+def sisyphus_pkg_force_uninstall(PKGLIST):
     check_sync()
     generate_sisyphus_local_packages_table_csv_pre()
-    subprocess.call(['emerge', '--unmerge', '-a'] + sys.argv[2:])
+    subprocess.call(['emerge', '--unmerge', '-a'] + PKGLIST)
     generate_sisyphus_local_packages_table_csv_post()
     sync_sisyphus_local_packages_table_csv()
 
@@ -210,24 +210,24 @@ def sisyphus_pkg_system_upgrade():
     generate_sisyphus_local_packages_table_csv_post()
     sync_sisyphus_local_packages_table_csv()
 
-def sisyphus_pkg_auto_install():
+def sisyphus_pkg_auto_install(PKGLIST):
     redcore_sync()
     generate_sisyphus_local_packages_table_csv_pre()
-    subprocess.call(['emerge'] + sys.argv[2:])
+    subprocess.call(['emerge'] + PKGLIST)
     generate_sisyphus_local_packages_table_csv_post()
     sync_sisyphus_local_packages_table_csv()
 
-def sisyphus_pkg_auto_uninstall():
+def sisyphus_pkg_auto_uninstall(PKGLIST):
     redcore_sync()
     generate_sisyphus_local_packages_table_csv_pre()
-    subprocess.call(['emerge', '--depclean'] + sys.argv[2:])
+    subprocess.call(['emerge', '--depclean'] + PKGLIST)
     generate_sisyphus_local_packages_table_csv_post()
     sync_sisyphus_local_packages_table_csv()
 
-def sisyphus_pkg_auto_force_uninstall():
+def sisyphus_pkg_auto_force_uninstall(PKGLIST):
     redcore_sync()
     generate_sisyphus_local_packages_table_csv_pre()
-    subprocess.call(['emerge', '--unmerge'] + sys.argv[2:])
+    subprocess.call(['emerge', '--unmerge'] + PKGLIST)
     generate_sisyphus_local_packages_table_csv_post()
     sync_sisyphus_local_packages_table_csv()
 
@@ -245,8 +245,8 @@ def sisyphus_pkg_auto_system_upgrade():
     generate_sisyphus_local_packages_table_csv_post()
     sync_sisyphus_local_packages_table_csv()
 
-def sisyphus_pkg_search():
-    subprocess.call(['emerge', '--search'] + sys.argv[2:])
+def sisyphus_pkg_search(PKGLIST):
+    subprocess.call(['emerge', '--search'] + PKGLIST)
 
 def sisyphus_pkg_system_update():
     redcore_sync()
