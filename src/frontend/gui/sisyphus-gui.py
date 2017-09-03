@@ -13,17 +13,26 @@ class Sisyphus(QtWidgets.QMainWindow):
         self.load_packages()
 
         self.input.returnPressed.connect(self.filter_database)
-    
+
         self.install.clicked.connect(self.install_package)
         self.uninstall.clicked.connect(self.uninstall_package)
         self.orphans.clicked.connect(self.remove_orphans)
         self.upgrade.clicked.connect(self.upgrade_system)
         self.abort.clicked.connect(self.exit_sisyphus)
 
+        self.progress.hide()
+
         self.install_thread = InstallThread()
+        self.install_thread.installFinished.connect(self.install_finished)
+
         self.uninstall_thread = UninstallThread()
+        self.uninstall_thread.uninstallFinished.connect(self.uninstall_finished)
+
         self.orphans_thread = OrphansThread()
+        self.orphans_thread.orphansFinished.connect(self.orphans_finished)
+
         self.upgrade_thread = UpgradeThread()
+        self.upgrade_thread.upgradeFinished.connect(self.upgrade_finished)
 
     def centerOnScreen(self):
         resolution = QtWidgets.QDesktopWidget().screenGeometry()
@@ -31,18 +40,68 @@ class Sisyphus(QtWidgets.QMainWindow):
                     (resolution.height() / 2) - (self.frameSize().height() / 2))
     
     def install_package(self):
+        self.hide_buttons()
+        self.progress.setRange(0,0)
+        self.progress.show()
         Sisyphus.PKGLIST = self.database.item(self.database.currentRow(), 1).text()
         self.install_thread.start()
 
+    def install_finished(self):
+        self.progress.setRange(0,1)
+        self.progress.setValue(1)
+        self.progress.hide()
+        self.show_buttons()
+
     def uninstall_package(self):
+        self.hide_buttons()
+        self.progress.setRange(0,0)
+        self.progress.show()
         Sisyphus.PKGLIST = self.database.item(self.database.currentRow(), 1).text()
         self.uninstall_thread.start()
 
+    def uninstall_finished(self):
+        self.progress.setRange(0,1)
+        self.progress.setValue(1)
+        self.progress.hide()
+        self.show_buttons()
+
     def remove_orphans(self):
+        self.hide_buttons()
+        self.progress.setRange(0,0)
+        self.progress.show()
         self.orphans_thread.start()
 
+    def orphans_finished(self):
+        self.progress.setRange(0,1)
+        self.progress.setValue(1)
+        self.progress.hide()
+        self.show_buttons()
+
     def upgrade_system(self):
+        self.hide_buttons()
+        self.progress.setRange(0,0)
+        self.progress.show()
         self.upgrade_thread.start()
+
+    def upgrade_finished(self):
+        self.progress.setRange(0,1)
+        self.progress.setValue(1)
+        self.progress.hide()
+        self.show_buttons()
+
+    def hide_buttons(self):
+        self.install.hide()
+        self.uninstall.hide()
+        self.orphans.hide()
+        self.upgrade.hide()
+        self.abort.hide()
+
+    def show_buttons(self):
+        self.install.show()
+        self.uninstall.show()
+        self.orphans.show()
+        self.upgrade.show()
+        self.abort.show()
 
     def refresh_database(self):
         sisyphus_pkg_system_update()
