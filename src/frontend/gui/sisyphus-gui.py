@@ -19,25 +19,30 @@ class Sisyphus(QtWidgets.QMainWindow):
         self.orphans.clicked.connect(self.remove_orphans)
         self.upgrade.clicked.connect(self.upgrade_system)
         self.abort.clicked.connect(self.exit_sisyphus)
-    
+
+        self.install_thread = InstallThread()
+        self.uninstall_thread = UninstallThread()
+        self.orphans_thread = OrphansThread()
+        self.upgrade_thread = UpgradeThread()
+
     def centerOnScreen(self):
         resolution = QtWidgets.QDesktopWidget().screenGeometry()
         self.move((resolution.width() / 2) - (self.frameSize().width() / 2),
                     (resolution.height() / 2) - (self.frameSize().height() / 2))
     
     def install_package(self):
-        PKGLIST = self.database.item(self.database.currentRow(), 1).text()
-        sisyphus_pkg_auto_install(PKGLIST.split())
+        Sisyphus.PKGLIST = self.database.item(self.database.currentRow(), 1).text()
+        self.install_thread.start()
 
     def uninstall_package(self):
-        PKGLIST = self.database.item(self.database.currentRow(), 1).text()
-        sisyphus_pkg_auto_uninstall(PKGLIST.split())
+        Sisyphus.PKGLIST = self.database.item(self.database.currentRow(), 1).text()
+        self.uninstall_thread.start()
 
     def remove_orphans(self):
-        sisyphus_pkg_auto_remove_orphans()
+        self.orphans_thread.start()
 
     def upgrade_system(self):
-        sisyphus_pkg_auto_system_upgrade()
+        self.upgrade_thread.start()
 
     def refresh_database(self):
         sisyphus_pkg_system_update()
@@ -81,6 +86,32 @@ class Sisyphus(QtWidgets.QMainWindow):
                 self.database.setItem(inx, 2, QtWidgets.QTableWidgetItem(row[2]))
                 self.database.setItem(inx, 3, QtWidgets.QTableWidgetItem(row[3]))
                 self.database.setItem(inx, 4, QtWidgets.QTableWidgetItem(row[4]))
+
+class InstallThread(QtCore.QThread):
+    installFinished = QtCore.pyqtSignal()
+    def run(self):
+        PKGLIST = Sisyphus.PKGLIST
+        sisyphus_pkg_auto_install(PKGLIST.split())
+        self.installFinished.emit()
+
+class UninstallThread(QtCore.QThread):
+    uninstallFinished = QtCore.pyqtSignal()
+    def run(self):
+        PKGLIST = Sisyphus.PKGLIST
+        sisyphus_pkg_auto_uninstall(PKGLIST.split())
+        self.uninstallFinished.emit()
+
+class OrphansThread(QtCore.QThread):
+    orphansFinished = QtCore.pyqtSignal()
+    def run(self):
+        sisyphus_pkg_auto_remove_orphans()
+        self.orphansFinished.emit()
+
+class UpgradeThread(QtCore.QThread):
+    upgradeFinished = QtCore.pyqtSignal()
+    def run(self):
+        sisyphus_pkg_auto_system_upgrade()
+        self.upgradeFinished.emit()
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
