@@ -16,8 +16,8 @@ class Sisyphus(QtWidgets.QMainWindow):
 
         self.install.clicked.connect(self.install_package)
         self.uninstall.clicked.connect(self.uninstall_package)
-        self.orphans.clicked.connect(self.remove_orphans)
         self.upgrade.clicked.connect(self.upgrade_system)
+        self.orphans.clicked.connect(self.remove_orphans)
         self.abort.clicked.connect(self.exit_sisyphus)
 
         self.progress.hide()
@@ -28,11 +28,11 @@ class Sisyphus(QtWidgets.QMainWindow):
         self.uninstall_thread = UninstallThread()
         self.uninstall_thread.uninstallFinished.connect(self.uninstall_finished)
 
-        self.orphans_thread = OrphansThread()
-        self.orphans_thread.orphansFinished.connect(self.orphans_finished)
-
         self.upgrade_thread = UpgradeThread()
         self.upgrade_thread.upgradeFinished.connect(self.upgrade_finished)
+
+        self.orphans_thread = OrphansThread()
+        self.orphans_thread.orphansFinished.connect(self.orphans_finished)
 
     def centerOnScreen(self):
         resolution = QtWidgets.QDesktopWidget().screenGeometry()
@@ -65,18 +65,6 @@ class Sisyphus(QtWidgets.QMainWindow):
         self.progress.hide()
         self.show_buttons()
 
-    def remove_orphans(self):
-        self.hide_buttons()
-        self.progress.setRange(0,0)
-        self.progress.show()
-        self.orphans_thread.start()
-
-    def orphans_finished(self):
-        self.progress.setRange(0,1)
-        self.progress.setValue(1)
-        self.progress.hide()
-        self.show_buttons()
-
     def upgrade_system(self):
         self.hide_buttons()
         self.progress.setRange(0,0)
@@ -84,6 +72,18 @@ class Sisyphus(QtWidgets.QMainWindow):
         self.upgrade_thread.start()
 
     def upgrade_finished(self):
+        self.progress.setRange(0,1)
+        self.progress.setValue(1)
+        self.progress.hide()
+        self.show_buttons()
+
+    def remove_orphans(self):
+        self.hide_buttons()
+        self.progress.setRange(0,0)
+        self.progress.show()
+        self.orphans_thread.start()
+
+    def orphans_finished(self):
         self.progress.setRange(0,1)
         self.progress.setValue(1)
         self.progress.hide()
@@ -160,17 +160,17 @@ class UninstallThread(QtCore.QThread):
         sisyphus_pkg_auto_uninstall(PKGLIST.split())
         self.uninstallFinished.emit()
 
-class OrphansThread(QtCore.QThread):
-    orphansFinished = QtCore.pyqtSignal()
-    def run(self):
-        sisyphus_pkg_auto_remove_orphans()
-        self.orphansFinished.emit()
-
 class UpgradeThread(QtCore.QThread):
     upgradeFinished = QtCore.pyqtSignal()
     def run(self):
         sisyphus_pkg_auto_system_upgrade()
         self.upgradeFinished.emit()
+
+class OrphansThread(QtCore.QThread):
+    orphansFinished = QtCore.pyqtSignal()
+    def run(self):
+        sisyphus_pkg_auto_remove_orphans()
+        self.orphansFinished.emit()
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
