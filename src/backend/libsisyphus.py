@@ -182,38 +182,17 @@ def sisyphus_pkg_install(PKGLIST):
     generate_sisyphus_local_packages_table_csv_post()
     sync_sisyphus_local_packages_table_csv()
 
-def sisyphus_pkg_uninstall(PKGLIST):
-    check_sync()
-    generate_sisyphus_local_packages_table_csv_pre()
-    subprocess.call(['emerge', '--depclean', '-a'] + PKGLIST)
-    generate_sisyphus_local_packages_table_csv_post()
-    sync_sisyphus_local_packages_table_csv()
-
-def sisyphus_pkg_force_uninstall(PKGLIST):
-    check_sync()
-    generate_sisyphus_local_packages_table_csv_pre()
-    subprocess.call(['emerge', '--unmerge', '-a'] + PKGLIST)
-    generate_sisyphus_local_packages_table_csv_post()
-    sync_sisyphus_local_packages_table_csv()
-
-def sisyphus_pkg_remove_orphans():
-    check_sync()
-    generate_sisyphus_local_packages_table_csv_pre()
-    subprocess.call(['emerge', '--depclean', '-a'])
-    generate_sisyphus_local_packages_table_csv_post()
-    sync_sisyphus_local_packages_table_csv()
-
-def sisyphus_pkg_system_upgrade():
-    check_sync()
-    generate_sisyphus_local_packages_table_csv_pre()
-    subprocess.call(['emerge', '-uDaN', '--with-bdeps=y', '@world'])
-    generate_sisyphus_local_packages_table_csv_post()
-    sync_sisyphus_local_packages_table_csv()
-
 def sisyphus_pkg_auto_install(PKGLIST):
     redcore_sync()
     generate_sisyphus_local_packages_table_csv_pre()
     subprocess.call(['emerge'] + PKGLIST)
+    generate_sisyphus_local_packages_table_csv_post()
+    sync_sisyphus_local_packages_table_csv()
+
+def sisyphus_pkg_uninstall(PKGLIST):
+    check_sync()
+    generate_sisyphus_local_packages_table_csv_pre()
+    subprocess.call(['emerge', '--depclean', '-a'] + PKGLIST)
     generate_sisyphus_local_packages_table_csv_post()
     sync_sisyphus_local_packages_table_csv()
 
@@ -224,6 +203,13 @@ def sisyphus_pkg_auto_uninstall(PKGLIST):
     generate_sisyphus_local_packages_table_csv_post()
     sync_sisyphus_local_packages_table_csv()
 
+def sisyphus_pkg_force_uninstall(PKGLIST):
+    check_sync()
+    generate_sisyphus_local_packages_table_csv_pre()
+    subprocess.call(['emerge', '--unmerge', '-a'] + PKGLIST)
+    generate_sisyphus_local_packages_table_csv_post()
+    sync_sisyphus_local_packages_table_csv()
+
 def sisyphus_pkg_auto_force_uninstall(PKGLIST):
     redcore_sync()
     generate_sisyphus_local_packages_table_csv_pre()
@@ -231,10 +217,24 @@ def sisyphus_pkg_auto_force_uninstall(PKGLIST):
     generate_sisyphus_local_packages_table_csv_post()
     sync_sisyphus_local_packages_table_csv()
 
+def sisyphus_pkg_remove_orphans():
+    check_sync()
+    generate_sisyphus_local_packages_table_csv_pre()
+    subprocess.call(['emerge', '--depclean', '-a'])
+    generate_sisyphus_local_packages_table_csv_post()
+    sync_sisyphus_local_packages_table_csv()
+
 def sisyphus_pkg_auto_remove_orphans():
     redcore_sync()
     generate_sisyphus_local_packages_table_csv_pre()
     subprocess.call(['emerge', '--depclean', '-q'])
+    generate_sisyphus_local_packages_table_csv_post()
+    sync_sisyphus_local_packages_table_csv()
+
+def sisyphus_pkg_system_upgrade():
+    check_sync()
+    generate_sisyphus_local_packages_table_csv_pre()
+    subprocess.call(['emerge', '-uDaN', '--with-bdeps=y', '@world'])
     generate_sisyphus_local_packages_table_csv_post()
     sync_sisyphus_local_packages_table_csv()
 
@@ -261,14 +261,14 @@ def sisyphus_pkg_help():
     print("Debian/RedHat-based systems to Gentoo.\n")
     print("Commands :\n")
     print("install - Install new packages")
-    print("uninstall - Uninstall packages *safely* (INFO : If reverse deps are found, package(s) will NOT be uninstalled)")
-    print("force-uninstall - Uninstall packages *unsafely* (WARNING : This option will ignore reverse deps, which may break your system)")
-    print("remove-orphans - Uninstall packages that are no longer needed")
-    print("upgrade -  Upgrade the system")
     print("auto-install - Install new packages - no confirmation")
+    print("uninstall - Uninstall packages *safely* (INFO : If reverse deps are found, package(s) will NOT be uninstalled)")
     print("auto-uninstall - Uninstall packages *safely* - no confirmation (INFO : If reverse deps are found, package(s) will NOT be uninstalled)")
+    print("force-uninstall - Uninstall packages *unsafely* (WARNING : This option will ignore reverse deps, which may break your system)")
     print("auto-force-uninstall - Uninstall packages *unsafely* - no confirmation (WARNING : This option will ignore reverse deps, which may break your system)")
+    print("remove-orphans - Uninstall packages that are no longer needed")
     print("auto-remove-orphans - Uninstall packages that are no longer needed - no confirmation")
+    print("upgrade -  Upgrade the system")
     print("auto-upgrade - Upgrade the system - no confirmation")
     print("search - Search for packages")
     print("update - Update the Portage tree, Overlay(s), Portage config files && Sisyphus database remote_packages table")
