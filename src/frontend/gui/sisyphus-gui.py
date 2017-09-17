@@ -7,33 +7,33 @@ class Sisyphus(QtWidgets.QMainWindow):
     def __init__(self):
         super(Sisyphus, self).__init__()
         uic.loadUi('ui/sisyphus-gui.ui', self)
-        self.refresh_database()
+        self.updateSystem()
         self.centerOnScreen()
         self.show()
         self.progress.hide()
-        self.load_packages()
+        self.loadDatabase()
 
-        self.input.returnPressed.connect(self.filter_database)
+        self.input.returnPressed.connect(self.filterDatabase)
 
-        self.install_thread = InstallThread()
-        self.install.clicked.connect(self.install_package)
-        self.install_thread.installFinished.connect(self.install_finished)
+        self.installThread = InstallThread()
+        self.install.clicked.connect(self.packageInstall)
+        self.installThread.installFinished.connect(self.finishedInstall)
 
-        self.uninstall_thread = UninstallThread()
-        self.uninstall.clicked.connect(self.uninstall_package)
-        self.uninstall_thread.uninstallFinished.connect(self.uninstall_finished)
+        self.uninstallThread = UninstallThread()
+        self.uninstall.clicked.connect(self.packageUninstall)
+        self.uninstallThread.uninstallFinished.connect(self.finishedUninstall)
 
-        self.upgrade_thread = UpgradeThread()
-        self.upgrade.clicked.connect(self.upgrade_system)
-        self.upgrade_thread.upgradeFinished.connect(self.upgrade_finished)
+        self.upgradeThread = UpgradeThread()
+        self.upgrade.clicked.connect(self.systemUpgrade)
+        self.upgradeThread.upgradeFinished.connect(self.finishedUpgrade)
 
-        self.orphans_thread = OrphansThread()
-        self.orphans.clicked.connect(self.remove_orphans)
-        self.orphans_thread.orphansFinished.connect(self.orphans_finished)
+        self.orphansThread = OrphansThread()
+        self.orphans.clicked.connect(self.orphansRemove)
+        self.orphansThread.orphansFinished.connect(self.finishedOrphans)
 
-        self.abort.clicked.connect(self.exit_sisyphus)
+        self.abort.clicked.connect(self.sisyphusExit)
 
-    def refresh_database(self):
+    def updateSystem(self):
         sisyphus_pkg_system_update()
 
     def centerOnScreen(self):
@@ -41,7 +41,7 @@ class Sisyphus(QtWidgets.QMainWindow):
         self.move((resolution.width() / 2) - (self.frameSize().width() / 2),
                     (resolution.height() / 2) - (self.frameSize().height() / 2))
 
-    def load_packages(self):
+    def loadDatabase(self):
         with sqlite3.connect('/var/lib/sisyphus/db/sisyphus.db') as db:
             cursor=db.cursor()
             cursor.execute('''SELECT
@@ -67,7 +67,7 @@ class Sisyphus(QtWidgets.QMainWindow):
                 self.database.setItem(inx, 3, QtWidgets.QTableWidgetItem(row[3]))
                 self.database.setItem(inx, 4, QtWidgets.QTableWidgetItem(row[4]))
 
-    def filter_database(self):
+    def filterDatabase(self):
         items = self.database.findItems(self.input.text(), QtCore.Qt.MatchExactly)
         if items:
             for item in items:
@@ -78,62 +78,62 @@ class Sisyphus(QtWidgets.QMainWindow):
         else:
             self.input.setText("There are no packages with that name...")
     
-    def install_package(self):
-        self.show_progress()
+    def packageInstall(self):
+        self.showProgressBar()
         Sisyphus.PKGLIST = self.database.item(self.database.currentRow(), 1).text()
-        self.install_thread.start()
+        self.installThread.start()
 
-    def install_finished(self):
-        self.hide_progress()
+    def finishedInstall(self):
+        self.hideProgressBar()
 
-    def uninstall_package(self):
-        self.show_progress()
+    def packageUninstall(self):
+        self.showProgressBar()
         Sisyphus.PKGLIST = self.database.item(self.database.currentRow(), 1).text()
-        self.uninstall_thread.start()
+        self.uninstallThread.start()
 
-    def uninstall_finished(self):
-        self.hide_progress()
+    def finishedUninstall(self):
+        self.hideProgressBar()
 
-    def upgrade_system(self):
-        self.show_progress()
-        self.upgrade_thread.start()
+    def systemUpgrade(self):
+        self.showProgressBar()
+        self.upgradeThread.start()
 
-    def upgrade_finished(self):
-        self.hide_progress()
+    def finishedUpgrade(self):
+        self.hideProgressBar()
 
-    def remove_orphans(self):
-        self.show_progress()
-        self.orphans_thread.start()
+    def orphansRemove(self):
+        self.showProgressBar()
+        self.orphansThread.start()
 
-    def orphans_finished(self):
-        self.hide_progress()
+    def finishedOrphans(self):
+        self.hideProgressBar()
 
-    def show_progress(self):
-        self.hide_buttons()
+    def showProgressBar(self):
+        self.hideButtons()
         self.progress.setRange(0,0)
         self.progress.show()
 
-    def hide_progress(self):
+    def hideProgressBar(self):
         self.progress.setRange(0,1)
         self.progress.setValue(1)
         self.progress.hide()
-        self.show_buttons()
+        self.showButtons()
 
-    def hide_buttons(self):
+    def hideButtons(self):
         self.install.hide()
         self.uninstall.hide()
         self.orphans.hide()
         self.upgrade.hide()
         self.abort.hide()
 
-    def show_buttons(self):
+    def showButtons(self):
         self.install.show()
         self.uninstall.show()
         self.orphans.show()
         self.upgrade.show()
         self.abort.show()
 
-    def exit_sisyphus(self):
+    def sisyphusExit(self):
         self.close()
 
 class InstallThread(QtCore.QThread):
