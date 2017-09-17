@@ -75,12 +75,13 @@ class Sisyphus(QtWidgets.QMainWindow):
     def packageInstall(self):
         indexes = self.database.selectionModel().selectedRows(1)
         if len(indexes) == 0:
-            print('Please select at least one package!!!')
-        Sisyphus.PKGLIST = []
-        for index in sorted(indexes):
-            Sisyphus.PKGLIST.append(index.data())
-        self.showProgressBar()
-        self.installThread.start()
+            self.input.setText("Please select at least one package!!!")
+        else:
+            Sisyphus.PKGLIST = []
+            for index in sorted(indexes):
+                Sisyphus.PKGLIST.append(index.data())
+            self.showProgressBar()
+            self.installThread.start()
 
     def finishedInstall(self):
         self.hideProgressBar()
@@ -88,12 +89,13 @@ class Sisyphus(QtWidgets.QMainWindow):
     def packageUninstall(self):
         indexes = self.database.selectionModel().selectedRows(1)
         if len(indexes) == 0:
-            print('Please select at least one package!!!')
-        Sisyphus.PKGLIST = []
-        for index in sorted(indexes):
-            Sisyphus.PKGLIST.append(index.data())
-        self.showProgressBar()
-        self.uninstallThread.start()
+            self.input.setText("Please select at least one package!!!")
+        else:
+            Sisyphus.PKGLIST = []
+            for index in sorted(indexes):
+                Sisyphus.PKGLIST.append(index.data())
+            self.showProgressBar()
+            self.uninstallThread.start()
 
     def finishedUninstall(self):
         self.hideProgressBar()
