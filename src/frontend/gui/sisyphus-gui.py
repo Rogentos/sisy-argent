@@ -10,80 +10,110 @@ class Sisyphus(QtWidgets.QMainWindow):
         self.refresh_database()
         self.centerOnScreen()
         self.show()
+        self.progress.hide()
         self.load_packages()
 
         self.input.returnPressed.connect(self.filter_database)
 
-        self.install.clicked.connect(self.install_package)
-        self.uninstall.clicked.connect(self.uninstall_package)
-        self.upgrade.clicked.connect(self.upgrade_system)
-        self.orphans.clicked.connect(self.remove_orphans)
-        self.abort.clicked.connect(self.exit_sisyphus)
-
-        self.progress.hide()
-
         self.install_thread = InstallThread()
+        self.install.clicked.connect(self.install_package)
         self.install_thread.installFinished.connect(self.install_finished)
 
         self.uninstall_thread = UninstallThread()
+        self.uninstall.clicked.connect(self.uninstall_package)
         self.uninstall_thread.uninstallFinished.connect(self.uninstall_finished)
 
         self.upgrade_thread = UpgradeThread()
+        self.upgrade.clicked.connect(self.upgrade_system)
         self.upgrade_thread.upgradeFinished.connect(self.upgrade_finished)
 
         self.orphans_thread = OrphansThread()
+        self.orphans.clicked.connect(self.remove_orphans)
         self.orphans_thread.orphansFinished.connect(self.orphans_finished)
+
+        self.abort.clicked.connect(self.exit_sisyphus)
+
+    def refresh_database(self):
+        sisyphus_pkg_system_update()
 
     def centerOnScreen(self):
         resolution = QtWidgets.QDesktopWidget().screenGeometry()
         self.move((resolution.width() / 2) - (self.frameSize().width() / 2),
                     (resolution.height() / 2) - (self.frameSize().height() / 2))
+
+    def load_packages(self):
+        with sqlite3.connect('/var/lib/sisyphus/db/sisyphus.db') as db:
+            cursor=db.cursor()
+            cursor.execute('''SELECT
+                            a.category AS cat,
+                            a.name AS pn,
+                            a.version AS av,
+                            i.version AS iv,
+                            a.description AS descr
+                            FROM remote_packages AS a
+                            LEFT JOIN local_packages AS i
+                            ON a.category = i.category
+                            AND a.name = i.name
+                            AND a.slot = i.slot
+                        ''')
+            rows = cursor.fetchall()
+
+            for row in rows:
+                inx = rows.index(row)
+                self.database.insertRow(inx)
+                self.database.setItem(inx, 0, QtWidgets.QTableWidgetItem(row[0]))
+                self.database.setItem(inx, 1, QtWidgets.QTableWidgetItem(row[1]))
+                self.database.setItem(inx, 2, QtWidgets.QTableWidgetItem(row[2]))
+                self.database.setItem(inx, 3, QtWidgets.QTableWidgetItem(row[3]))
+                self.database.setItem(inx, 4, QtWidgets.QTableWidgetItem(row[4]))
+
+    def filter_database(self):
+        items = self.database.findItems(self.input.text(), QtCore.Qt.MatchExactly)
+        if items:
+            for item in items:
+                results = ''.join('%d' % (item.row() + 0)).split()
+                coordinates = map(int, results)
+                for coordinate in coordinates:
+                    self.database.setCurrentCell(coordinate, 0)
+        else:
+            self.input.setText("There are no packages with that name...")
     
     def install_package(self):
-        self.hide_buttons()
-        self.progress.setRange(0,0)
-        self.progress.show()
+        self.show_progress()
         Sisyphus.PKGLIST = self.database.item(self.database.currentRow(), 1).text()
         self.install_thread.start()
 
     def install_finished(self):
-        self.progress.setRange(0,1)
-        self.progress.setValue(1)
-        self.progress.hide()
-        self.show_buttons()
+        self.hide_progress()
 
     def uninstall_package(self):
-        self.hide_buttons()
-        self.progress.setRange(0,0)
-        self.progress.show()
+        self.show_progress()
         Sisyphus.PKGLIST = self.database.item(self.database.currentRow(), 1).text()
         self.uninstall_thread.start()
 
     def uninstall_finished(self):
-        self.progress.setRange(0,1)
-        self.progress.setValue(1)
-        self.progress.hide()
-        self.show_buttons()
+        self.hide_progress()
 
     def upgrade_system(self):
-        self.hide_buttons()
-        self.progress.setRange(0,0)
-        self.progress.show()
+        self.show_progress()
         self.upgrade_thread.start()
 
     def upgrade_finished(self):
-        self.progress.setRange(0,1)
-        self.progress.setValue(1)
-        self.progress.hide()
-        self.show_buttons()
+        self.hide_progress()
 
     def remove_orphans(self):
-        self.hide_buttons()
-        self.progress.setRange(0,0)
-        self.progress.show()
+        self.show_progress()
         self.orphans_thread.start()
 
     def orphans_finished(self):
+        self.hide_progress()
+
+    def show_progress(self):
+        self.hide_buttons()
+        self.progress.setRange(0,0)
+        self.progress.show()
+
+    def hide_progress(self):
         self.progress.setRange(0,1)
         self.progress.setValue(1)
         self.progress.hide()
@@ -103,48 +133,8 @@ class Sisyphus(QtWidgets.QMainWindow):
         self.upgrade.show()
         self.abort.show()
 
-    def refresh_database(self):
-        sisyphus_pkg_system_update()
-
     def exit_sisyphus(self):
         self.close()
-
-    def filter_database(self):
-        items = self.database.findItems(self.input.text(), QtCore.Qt.MatchExactly)
-        if items:
-            for item in items:
-                results = ''.join('%d' % (item.row() + 0)).split()
-                coordinates = map(int, results)
-                for coordinate in coordinates:
-                    self.database.setCurrentCell(coordinate, 0)
-        else:
-            self.input.setText("There are no packages with that name...")
- 
-    def load_packages(self):
-        with sqlite3.connect('/var/lib/sisyphus/db/sisyphus.db') as db:
-            cursor=db.cursor()
-            cursor.execute('''SELECT
-                            a.category AS cat,
-                            a.name AS pn,
-                            a.version AS av,
-                            i.version AS iv,
-                            a.description AS descr
-                            FROM remote_packages AS a
-                            LEFT JOIN local_packages AS i
-                            ON a.category = i.category
-                            AND a.name = i.name
-                            AND a.slot = i.slot
-                        ''')
-            rows = cursor.fetchall()
-            
-            for row in rows:
-                inx = rows.index(row)
-                self.database.insertRow(inx)
-                self.database.setItem(inx, 0, QtWidgets.QTableWidgetItem(row[0]))
-                self.database.setItem(inx, 1, QtWidgets.QTableWidgetItem(row[1]))
-                self.database.setItem(inx, 2, QtWidgets.QTableWidgetItem(row[2]))
-                self.database.setItem(inx, 3, QtWidgets.QTableWidgetItem(row[3]))
-                self.database.setItem(inx, 4, QtWidgets.QTableWidgetItem(row[4]))
 
 class InstallThread(QtCore.QThread):
     installFinished = QtCore.pyqtSignal()
