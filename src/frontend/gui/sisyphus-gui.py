@@ -13,7 +13,7 @@ class Sisyphus(QtWidgets.QMainWindow):
         self.progress.hide()
         self.loadDatabase("'%%'")
 
-        self.input.returnPressed.connect(self.filterDatabase)
+        self.input.textEdited.connect(self.filterDatabase)
 
         self.installThread = InstallThread()
         self.install.clicked.connect(self.packageInstall)
@@ -78,9 +78,8 @@ class Sisyphus(QtWidgets.QMainWindow):
         Sisyphus.PKGLIST = []
         for index in sorted(indexes):
             Sisyphus.PKGLIST.append(index.data())
-        print(Sisyphus.PKGLIST)
-        #self.showProgressBar()
-        #self.installThread.start()
+        self.showProgressBar()
+        self.installThread.start()
 
     def finishedInstall(self):
         self.hideProgressBar()
@@ -92,9 +91,8 @@ class Sisyphus(QtWidgets.QMainWindow):
         Sisyphus.PKGLIST = []
         for index in sorted(indexes):
             Sisyphus.PKGLIST.append(index.data())
-        print(Sisyphus.PKGLIST)
-        #self.showProgressBar()
-        #self.uninstallThread.start()
+        self.showProgressBar()
+        self.uninstallThread.start()
 
     def finishedUninstall(self):
         self.hideProgressBar()
@@ -145,14 +143,14 @@ class InstallThread(QtCore.QThread):
     installFinished = QtCore.pyqtSignal()
     def run(self):
         PKGLIST = Sisyphus.PKGLIST
-        sisyphus_pkg_auto_install(PKGLIST.split())
+        sisyphus_pkg_auto_install(PKGLIST)
         self.installFinished.emit()
 
 class UninstallThread(QtCore.QThread):
     uninstallFinished = QtCore.pyqtSignal()
     def run(self):
         PKGLIST = Sisyphus.PKGLIST
-        sisyphus_pkg_auto_uninstall(PKGLIST.split())
+        sisyphus_pkg_auto_uninstall(PKGLIST)
         self.uninstallFinished.emit()
 
 class UpgradeThread(QtCore.QThread):
