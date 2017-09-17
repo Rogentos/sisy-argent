@@ -108,7 +108,7 @@
        </widget>
       </item>
       <item row="1" column="0" colspan="5">
-       <widget class="QTableWidget" name="database">
+       <widget class="QTableView" name="database">
         <property name="frameShape">
          <enum>QFrame::Panel</enum>
         </property>
@@ -125,7 +125,7 @@
          <bool>false</bool>
         </property>
         <property name="selectionMode">
-         <enum>QAbstractItemView::SingleSelection</enum>
+         <enum>QAbstractItemView::MultiSelection</enum>
         </property>
         <property name="selectionBehavior">
          <enum>QAbstractItemView::SelectRows</enum>

@@ -11,7 +11,7 @@ class Sisyphus(QtWidgets.QMainWindow):
         self.centerOnScreen()
         self.show()
         self.progress.hide()
-        self.loadDatabase()
+        self.loadDatabase("'%%'")
 
         self.input.returnPressed.connect(self.filterDatabase)
 
@@ -41,7 +41,7 @@ class Sisyphus(QtWidgets.QMainWindow):
         self.move((resolution.width() / 2) - (self.frameSize().width() / 2),
                     (resolution.height() / 2) - (self.frameSize().height() / 2))
 
-    def loadDatabase(self):
+    def loadDatabase(self,searchTerm):
         with sqlite3.connect('/var/lib/sisyphus/db/sisyphus.db') as db:
             cursor=db.cursor()
             cursor.execute('''SELECT
@@ -55,41 +55,46 @@ class Sisyphus(QtWidgets.QMainWindow):
                             ON a.category = i.category
                             AND a.name = i.name
                             AND a.slot = i.slot
-                        ''')
+                            WHERE a.name LIKE %s
+                        '''%searchTerm)
             rows = cursor.fetchall()
-
+            model = QtGui.QStandardItemModel(len(rows), 5)
             for row in rows:
-                inx = rows.index(row)
-                self.database.insertRow(inx)
-                self.database.setItem(inx, 0, QtWidgets.QTableWidgetItem(row[0]))
-                self.database.setItem(inx, 1, QtWidgets.QTableWidgetItem(row[1]))
-                self.database.setItem(inx, 2, QtWidgets.QTableWidgetItem(row[2]))
-                self.database.setItem(inx, 3, QtWidgets.QTableWidgetItem(row[3]))
-                self.database.setItem(inx, 4, QtWidgets.QTableWidgetItem(row[4]))
+                indx = rows.index(row)
+                for column in range(0, 5):
+                    item = QtGui.QStandardItem("%s"%(row[column]))
+                    model.setItem(indx, column, item)
+            self.database.setModel(model)
 
     def filterDatabase(self):
-        items = self.database.findItems(self.input.text(), QtCore.Qt.MatchExactly)
-        if items:
-            for item in items:
-                results = ''.join('%d' % (item.row() + 0)).split()
-                coordinates = map(int, results)
-                for coordinate in coordinates:
-                    self.database.setCurrentCell(coordinate, 0)
-        else:
-            self.input.setText("There are no packages with that name...")
+        search = self.input.text()
+        queryTerm = "'%" + search + "%'"
+        self.loadDatabase(queryTerm)
     
     def packageInstall(self):
-        self.showProgressBar()
-        Sisyphus.PKGLIST = self.database.item(self.database.currentRow(), 1).text()
-        self.installThread.start()
+        indexes = self.database.selectionModel().selectedRows(1)
+        if len(indexes) == 0:
+            print('Please select at least one package!!!')
+        Sisyphus.PKGLIST = []
+        for index in sorted(indexes):
+            Sisyphus.PKGLIST.append(index.data())
+        print(Sisyphus.PKGLIST)
+        #self.showProgressBar()
+        #self.installThread.start()
 
     def finishedInstall(self):
         self.hideProgressBar()
 
     def packageUninstall(self):
-        self.showProgressBar()
-        Sisyphus.PKGLIST = self.database.item(self.database.currentRow(), 1).text()
-        self.uninstallThread.start()
+        indexes = self.database.selectionModel().selectedRows(1)
+        if len(indexes) == 0:
+            print('Please select at least one package!!!')
+        Sisyphus.PKGLIST = []
+        for index in sorted(indexes):
+            Sisyphus.PKGLIST.append(index.data())
+        print(Sisyphus.PKGLIST)
+        #self.showProgressBar()
+        #self.uninstallThread.start()
 
     def finishedUninstall(self):
         self.hideProgressBar()
