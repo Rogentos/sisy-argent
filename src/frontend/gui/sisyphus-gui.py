@@ -59,6 +59,7 @@ class Sisyphus(QtWidgets.QMainWindow):
                         '''%searchTerm)
             rows = cursor.fetchall()
             model = QtGui.QStandardItemModel(len(rows), 5)
+            model.setHorizontalHeaderLabels(['Category', 'Name', 'Available Version', 'Installed Version', 'Description'])
             for row in rows:
                 indx = rows.index(row)
                 for column in range(0, 5):
