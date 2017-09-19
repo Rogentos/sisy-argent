@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 collect_local_portage_database() {
-	for i in $(qlist -ICv); do
-		pushd /var/db/pkg/$i > /dev/null 2>&1
+	for i in $(sed -e "s/\:1.0//g" </var/lib/portage/world); do
+		pushd /var/db/pkg/"$i"* > /dev/null 2>&1
 		echo "$(<CATEGORY),$(sed -re "s/-([0-9])/,\1/" <PF),$(<SLOT),$(sed -e "s/\"//g" -e "s/\'//g" -e "s/\,//g" <DESCRIPTION)" >> /tmp/local_preinst.csv
 		popd > /dev/null 2>&1
 	done
