@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import sys, subprocess, sqlite3
+from collections import OrderedDict
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from libsisyphus import *
 
@@ -12,9 +13,17 @@ class Sisyphus(QtWidgets.QMainWindow):
         self.show()
         self.progress.hide()
         
-        Sisyphus.SFIELD = "name" # forced to 'name' until ui implementation
-        #print(Sisyphus.SFIELD)
-        self.loadDatabase(Sisyphus.SFIELD,"'%%'")
+        self.SEARCHFIELDS = OrderedDict ([
+            ('Category', 'cat'),
+            ('Name', 'pn'),
+            ('Description', 'descr')
+            ])
+        self.selectfield.addItems(self.SEARCHFIELDS.keys())
+        self.selectfield.setCurrentIndex(1) # defaults to package name
+        self.selectfield.activated.connect(self.setSearchField)
+         
+        Sisyphus.SEARCHFIELD = "pn" # defaults to package name
+        self.loadDatabase(Sisyphus.SEARCHFIELD,"'%%'")
 
         self.input.textEdited.connect(self.filterDatabase)
 
@@ -35,7 +44,10 @@ class Sisyphus(QtWidgets.QMainWindow):
         self.orphansThread.orphansFinished.connect(self.finishedOrphans)
 
         self.abort.clicked.connect(self.sisyphusExit)
-
+        
+    def setSearchField(self):
+        Sisyphus.SEARCHFIELD = self.SEARCHFIELDS[self.selectfield.currentText()]
+        
     def updateSystem(self):
         sisyphus_pkg_system_update()
 
@@ -58,7 +70,7 @@ class Sisyphus(QtWidgets.QMainWindow):
                             ON a.category = i.category
                             AND a.name = i.name
                             AND a.slot = i.slot
-                            WHERE a.%s LIKE %s
+                            WHERE %s LIKE %s
                         ''' % (searchField, searchTerm))
             rows = cursor.fetchall()
             model = QtGui.QStandardItemModel(len(rows), 5)
@@ -73,7 +85,7 @@ class Sisyphus(QtWidgets.QMainWindow):
     def filterDatabase(self):
         search = self.input.text()
         searchTerm = "'%" + search + "%'"
-        self.loadDatabase(Sisyphus.SFIELD,searchTerm)
+        self.loadDatabase(Sisyphus.SEARCHFIELD,searchTerm)
     
     def packageInstall(self):
         indexes = self.database.selectionModel().selectedRows(1)

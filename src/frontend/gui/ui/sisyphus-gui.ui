@@ -71,43 +71,7 @@
       <property name="spacing">
        <number>25</number>
       </property>
-      <item row="0" column="1" colspan="3">
-       <widget class="QLineEdit" name="input">
-        <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Write package name and press Enter&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-        <property name="clearButtonEnabled">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QPushButton" name="uninstall">
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>25</height>
-         </size>
-        </property>
-        <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Uninstall package&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="icon">
-         <iconset>
-          <normaloff>../icon/uninstall.png</normaloff>../icon/uninstall.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0" colspan="5">
+      <item row="3" column="0" colspan="5">
        <widget class="QTableView" name="database">
         <property name="frameShape">
          <enum>QFrame::Panel</enum>
@@ -145,34 +109,32 @@
         <attribute name="verticalHeaderHighlightSections">
          <bool>false</bool>
         </attribute>
-        <column>
-         <property name="text">
-          <string>Category</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Name</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Available Version</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Installed Version</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Description</string>
-         </property>
-        </column>
        </widget>
       </item>
-      <item row="3" column="0">
+      <item row="5" column="2">
+       <widget class="QPushButton" name="upgrade">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Upgrade system&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="icon">
+         <iconset>
+          <normaloff>../icon/upgrade.png</normaloff>../icon/upgrade.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
        <widget class="QPushButton" name="install">
         <property name="maximumSize">
          <size>
@@ -198,8 +160,8 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="4">
-       <widget class="QPushButton" name="abort">
+      <item row="5" column="1">
+       <widget class="QPushButton" name="uninstall">
         <property name="maximumSize">
          <size>
           <width>16777215</width>
@@ -207,11 +169,14 @@
          </size>
         </property>
         <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Exit Sisyphus&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Uninstall package&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="text">
+         <string/>
         </property>
         <property name="icon">
          <iconset>
-          <normaloff>../icon/exit.png</normaloff>../icon/exit.png</iconset>
+          <normaloff>../icon/uninstall.png</normaloff>../icon/uninstall.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -221,30 +186,7 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="2">
-       <widget class="QPushButton" name="upgrade">
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>25</height>
-         </size>
-        </property>
-        <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Upgrade system&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-        <property name="icon">
-         <iconset>
-          <normaloff>../icon/upgrade.png</normaloff>../icon/upgrade.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="3">
+      <item row="5" column="3">
        <widget class="QPushButton" name="orphans">
         <property name="maximumSize">
          <size>
@@ -269,6 +211,42 @@
          </size>
         </property>
        </widget>
+      </item>
+      <item row="5" column="4">
+       <widget class="QPushButton" name="abort">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Exit Sisyphus&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="icon">
+         <iconset>
+          <normaloff>../icon/exit.png</normaloff>../icon/exit.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1" colspan="3">
+       <widget class="QLineEdit" name="input">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Write package name and press Enter&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="clearButtonEnabled">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QComboBox" name="selectfield"/>
       </item>
      </layout>
     </item>
