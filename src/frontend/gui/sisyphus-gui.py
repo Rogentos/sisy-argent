@@ -21,9 +21,10 @@ class Sisyphus(QtWidgets.QMainWindow):
         self.selectfield.addItems(self.SEARCHFIELDS.keys())
         self.selectfield.setCurrentIndex(1) # defaults to package name
         self.selectfield.activated.connect(self.setSearchField)
-         
+        
+        Sisyphus.SEARCHTERM = "'%%'" # defaults to all
         Sisyphus.SEARCHFIELD = "pn" # defaults to package name
-        self.loadDatabase(Sisyphus.SEARCHFIELD,"'%%'")
+        self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM)
 
         self.input.textEdited.connect(self.filterDatabase)
 
@@ -84,8 +85,8 @@ class Sisyphus(QtWidgets.QMainWindow):
 
     def filterDatabase(self):
         search = self.input.text()
-        searchTerm = "'%" + search + "%'"
-        self.loadDatabase(Sisyphus.SEARCHFIELD,searchTerm)
+        Sisyphus.SEARCHTERM = "'%" + search + "%'"
+        self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM)
     
     def packageInstall(self):
         indexes = self.database.selectionModel().selectedRows(1)
@@ -100,6 +101,7 @@ class Sisyphus(QtWidgets.QMainWindow):
 
     def finishedInstall(self):
         self.hideProgressBar()
+        self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM)
 
     def packageUninstall(self):
         indexes = self.database.selectionModel().selectedRows(1)
@@ -114,6 +116,7 @@ class Sisyphus(QtWidgets.QMainWindow):
 
     def finishedUninstall(self):
         self.hideProgressBar()
+        self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM)
 
     def systemUpgrade(self):
         self.showProgressBar()
@@ -121,6 +124,7 @@ class Sisyphus(QtWidgets.QMainWindow):
 
     def finishedUpgrade(self):
         self.hideProgressBar()
+        self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM)
 
     def orphansRemove(self):
         self.showProgressBar()
@@ -128,6 +132,7 @@ class Sisyphus(QtWidgets.QMainWindow):
 
     def finishedOrphans(self):
         self.hideProgressBar()
+        self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM)
 
     def showProgressBar(self):
         self.hideButtons()
