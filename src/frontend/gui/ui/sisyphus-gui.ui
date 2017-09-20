@@ -267,6 +267,7 @@
   </widget>
  </widget>
  <tabstops>
+  <tabstop>selectfield</tabstop>
   <tabstop>input</tabstop>
   <tabstop>database</tabstop>
   <tabstop>install</tabstop>
