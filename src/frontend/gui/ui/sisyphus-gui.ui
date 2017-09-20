@@ -248,6 +248,9 @@
       <item row="1" column="0">
        <widget class="QComboBox" name="selectfield"/>
       </item>
+      <item row="1" column="4">
+       <widget class="QComboBox" name="selectfilter"/>
+      </item>
      </layout>
     </item>
     <item row="1" column="0">
@@ -269,6 +272,7 @@
  <tabstops>
   <tabstop>selectfield</tabstop>
   <tabstop>input</tabstop>
+  <tabstop>selectfilter</tabstop>
   <tabstop>database</tabstop>
   <tabstop>install</tabstop>
   <tabstop>uninstall</tabstop>

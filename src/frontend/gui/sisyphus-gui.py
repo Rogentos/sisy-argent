@@ -20,11 +20,22 @@ class Sisyphus(QtWidgets.QMainWindow):
             ])
         self.selectfield.addItems(self.SEARCHFIELDS.keys())
         self.selectfield.setCurrentIndex(1) # defaults to package name
-        self.selectfield.activated.connect(self.setSearchField)
+        self.selectfield.currentIndexChanged.connect(self.setSearchField)
         
+        self.SEARCHFILTERS = OrderedDict ([
+            ('*', ''),
+            ('Installed', 'AND iv IS NOT NULL'),
+            ('Upgradable', 'AND iv < av'),
+            ('Downgradable', 'AND iv > av')
+            ])
+        self.selectfilter.addItems(self.SEARCHFILTERS.keys())
+        self.selectfilter.setCurrentIndex(0) # defaults to package name
+        self.selectfilter.currentIndexChanged.connect(self.setSearchFilter)
+                
         Sisyphus.SEARCHTERM = "'%%'" # defaults to all
-        Sisyphus.SEARCHFIELD = "pn" # defaults to package name
-        self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM)
+        Sisyphus.SEARCHFIELD = self.SEARCHFIELDS['Name'] # defaults to package name
+        Sisyphus.SEARCHFILTER = self.SEARCHFILTERS['*'] # defaults to any        
+        self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM,Sisyphus.SEARCHFILTER)
 
         self.input.textEdited.connect(self.filterDatabase)
 
@@ -48,6 +59,11 @@ class Sisyphus(QtWidgets.QMainWindow):
         
     def setSearchField(self):
         Sisyphus.SEARCHFIELD = self.SEARCHFIELDS[self.selectfield.currentText()]
+        self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM,Sisyphus.SEARCHFILTER)
+        
+    def setSearchFilter(self):
+        Sisyphus.SEARCHFILTER = self.SEARCHFILTERS[self.selectfilter.currentText()]
+        self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM,Sisyphus.SEARCHFILTER)
         
     def updateSystem(self):
         sisyphus_pkg_system_update()
@@ -57,7 +73,7 @@ class Sisyphus(QtWidgets.QMainWindow):
         self.move((resolution.width() / 2) - (self.frameSize().width() / 2),
                     (resolution.height() / 2) - (self.frameSize().height() / 2))
 
-    def loadDatabase(self,searchField,searchTerm):
+    def loadDatabase(self,searchField,searchTerm,searchFilter):
         with sqlite3.connect('/var/lib/sisyphus/db/sisyphus.db') as db:
             cursor=db.cursor()
             cursor.execute('''SELECT
@@ -71,8 +87,8 @@ class Sisyphus(QtWidgets.QMainWindow):
                             ON a.category = i.category
                             AND a.name = i.name
                             AND a.slot = i.slot
-                            WHERE %s LIKE %s
-                        ''' % (searchField, searchTerm))
+                            WHERE %s LIKE %s %s
+                        ''' % (searchField, searchTerm, searchFilter))
             rows = cursor.fetchall()
             model = QtGui.QStandardItemModel(len(rows), 5)
             model.setHorizontalHeaderLabels(['Category', 'Name', 'Available Version', 'Installed Version', 'Description'])
@@ -86,7 +102,7 @@ class Sisyphus(QtWidgets.QMainWindow):
     def filterDatabase(self):
         search = self.input.text()
         Sisyphus.SEARCHTERM = "'%" + search + "%'"
-        self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM)
+        self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM,Sisyphus.SEARCHFILTER)
     
     def packageInstall(self):
         indexes = self.database.selectionModel().selectedRows(1)
@@ -101,7 +117,7 @@ class Sisyphus(QtWidgets.QMainWindow):
 
     def finishedInstall(self):
         self.hideProgressBar()
-        self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM)
+        self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM,Sisyphus.SEARCHFILTER)
 
     def packageUninstall(self):
         indexes = self.database.selectionModel().selectedRows(1)
@@ -116,7 +132,7 @@ class Sisyphus(QtWidgets.QMainWindow):
 
     def finishedUninstall(self):
         self.hideProgressBar()
-        self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM)
+        self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM,Sisyphus.SEARCHFILTER)
 
     def systemUpgrade(self):
         self.showProgressBar()
@@ -124,7 +140,7 @@ class Sisyphus(QtWidgets.QMainWindow):
 
     def finishedUpgrade(self):
         self.hideProgressBar()
-        self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM)
+        self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM,Sisyphus.SEARCHFILTER)
 
     def orphansRemove(self):
         self.showProgressBar()
@@ -132,7 +148,7 @@ class Sisyphus(QtWidgets.QMainWindow):
 
     def finishedOrphans(self):
         self.hideProgressBar()
-        self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM)
+        self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM,Sisyphus.SEARCHFILTER)
 
     def showProgressBar(self):
         self.hideButtons()
