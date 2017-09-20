@@ -124,6 +124,7 @@ class Sisyphus(QtWidgets.QMainWindow):
 
     def finishedUpgrade(self):
         self.hideProgressBar()
+        self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM)
 
     def orphansRemove(self):
         self.showProgressBar()
