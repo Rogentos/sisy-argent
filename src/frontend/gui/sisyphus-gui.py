@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import sys, subprocess, sqlite3
+from collections import OrderedDict
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from libsisyphus import *
 
@@ -11,7 +12,18 @@ class Sisyphus(QtWidgets.QMainWindow):
         self.centerOnScreen()
         self.show()
         self.progress.hide()
-        self.loadDatabase("'%%'")
+        
+        self.SEARCHFIELDS = OrderedDict ([
+            ('Category', 'cat'),
+            ('Name', 'pn'),
+            ('Description', 'descr')
+            ])
+        self.selectfield.addItems(self.SEARCHFIELDS.keys())
+        self.selectfield.setCurrentIndex(1) # defaults to package name
+        self.selectfield.activated.connect(self.setSearchField)
+         
+        Sisyphus.SEARCHFIELD = "pn" # defaults to package name
+        self.loadDatabase(Sisyphus.SEARCHFIELD,"'%%'")
 
         self.input.textEdited.connect(self.filterDatabase)
 
@@ -32,7 +44,10 @@ class Sisyphus(QtWidgets.QMainWindow):
         self.orphansThread.orphansFinished.connect(self.finishedOrphans)
 
         self.abort.clicked.connect(self.sisyphusExit)
-
+        
+    def setSearchField(self):
+        Sisyphus.SEARCHFIELD = self.SEARCHFIELDS[self.selectfield.currentText()]
+        
     def updateSystem(self):
         sisyphus_pkg_system_update()
 
@@ -41,7 +56,7 @@ class Sisyphus(QtWidgets.QMainWindow):
         self.move((resolution.width() / 2) - (self.frameSize().width() / 2),
                     (resolution.height() / 2) - (self.frameSize().height() / 2))
 
-    def loadDatabase(self,searchTerm):
+    def loadDatabase(self,searchField,searchTerm):
         with sqlite3.connect('/var/lib/sisyphus/db/sisyphus.db') as db:
             cursor=db.cursor()
             cursor.execute('''SELECT
@@ -55,8 +70,8 @@ class Sisyphus(QtWidgets.QMainWindow):
                             ON a.category = i.category
                             AND a.name = i.name
                             AND a.slot = i.slot
-                            WHERE a.name LIKE %s
-                        '''%searchTerm)
+                            WHERE %s LIKE %s
+                        ''' % (searchField, searchTerm))
             rows = cursor.fetchall()
             model = QtGui.QStandardItemModel(len(rows), 5)
             model.setHorizontalHeaderLabels(['Category', 'Name', 'Available Version', 'Installed Version', 'Description'])
@@ -69,8 +84,8 @@ class Sisyphus(QtWidgets.QMainWindow):
 
     def filterDatabase(self):
         search = self.input.text()
-        queryTerm = "'%" + search + "%'"
-        self.loadDatabase(queryTerm)
+        searchTerm = "'%" + search + "%'"
+        self.loadDatabase(Sisyphus.SEARCHFIELD,searchTerm)
     
     def packageInstall(self):
         indexes = self.database.selectionModel().selectedRows(1)
