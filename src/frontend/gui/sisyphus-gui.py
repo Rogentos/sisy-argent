@@ -23,7 +23,8 @@ class Sisyphus(QtWidgets.QMainWindow):
         self.selectfield.currentIndexChanged.connect(self.setSearchField)
         
         self.SEARCHFILTERS = OrderedDict ([
-            ('*', ''),
+            ('All', ''),
+            ('Available', 'AND iv IS NULL'),
             ('Installed', 'AND iv IS NOT NULL'),
             ('Upgradable', 'AND iv < av'),
             ('Downgradable', 'AND iv > av')
@@ -34,7 +35,7 @@ class Sisyphus(QtWidgets.QMainWindow):
                 
         Sisyphus.SEARCHTERM = "'%%'" # defaults to all
         Sisyphus.SEARCHFIELD = self.SEARCHFIELDS['Name'] # defaults to package name
-        Sisyphus.SEARCHFILTER = self.SEARCHFILTERS['*'] # defaults to any        
+        Sisyphus.SEARCHFILTER = self.SEARCHFILTERS['All'] # defaults to any        
         self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM,Sisyphus.SEARCHFILTER)
 
         self.input.textEdited.connect(self.filterDatabase)
