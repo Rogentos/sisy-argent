@@ -8,8 +8,8 @@ class Sisyphus(QtWidgets.QMainWindow):
     def __init__(self):
         super(Sisyphus, self).__init__()
         uic.loadUi('ui/sisyphus-gui.ui', self)
-        self.updateSystem()
         self.centerOnScreen()
+        self.updateSystem()
         self.show()
         self.progress.hide()
         
@@ -35,7 +35,7 @@ class Sisyphus(QtWidgets.QMainWindow):
                 
         Sisyphus.SEARCHTERM = "'%%'"
         Sisyphus.SEARCHFIELD = self.SEARCHFIELDS['Name']
-        Sisyphus.SEARCHFILTER = self.SEARCHFILTERS['All']        
+        Sisyphus.SEARCHFILTER = self.SEARCHFILTERS['All']
         self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM,Sisyphus.SEARCHFILTER)
 
         self.input.textEdited.connect(self.filterDatabase)
@@ -66,9 +66,6 @@ class Sisyphus(QtWidgets.QMainWindow):
         Sisyphus.SEARCHFILTER = self.SEARCHFILTERS[self.selectfilter.currentText()]
         self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM,Sisyphus.SEARCHFILTER)
         
-    def updateSystem(self):
-        sisyphus_pkg_system_update()
-
     def centerOnScreen(self):
         resolution = QtWidgets.QDesktopWidget().screenGeometry()
         self.move((resolution.width() / 2) - (self.frameSize().width() / 2),
@@ -104,7 +101,11 @@ class Sisyphus(QtWidgets.QMainWindow):
         search = self.input.text()
         Sisyphus.SEARCHTERM = "'%" + search + "%'"
         self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM,Sisyphus.SEARCHFILTER)
-    
+
+    def updateSystem(self):
+        self.updateThread = UpdateThread()
+        self.updateThread.start()
+
     def packageInstall(self):
         indexes = self.database.selectionModel().selectedRows(1)
         if len(indexes) == 0:
@@ -178,6 +179,11 @@ class Sisyphus(QtWidgets.QMainWindow):
 
     def sisyphusExit(self):
         self.close()
+
+class UpdateThread(QtCore.QThread):
+    updateFinished = QtCore.pyqtSignal()
+    def run(self):
+        sisyphus_pkg_system_update()
 
 class InstallThread(QtCore.QThread):
     installFinished = QtCore.pyqtSignal()
