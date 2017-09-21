@@ -35,14 +35,17 @@
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>25</x>
-     <y>25</y>
-     <width>906</width>
-     <height>326</height>
+     <x>30</x>
+     <y>51</y>
+     <width>601</width>
+     <height>391</height>
     </rect>
    </property>
-   <layout class="QGridLayout" name="externalgrid">
+   <layout class="QGridLayout" name="SisyphusGrid">
     <property name="leftMargin">
+     <number>25</number>
+    </property>
+    <property name="topMargin">
      <number>25</number>
     </property>
     <property name="rightMargin">
@@ -54,87 +57,87 @@
     <property name="spacing">
      <number>25</number>
     </property>
+    <item row="1" column="0">
+     <widget class="QTableView" name="database">
+      <property name="frameShape">
+       <enum>QFrame::Panel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <property name="sizeAdjustPolicy">
+       <enum>QAbstractScrollArea::AdjustToContents</enum>
+      </property>
+      <property name="editTriggers">
+       <set>QAbstractItemView::NoEditTriggers</set>
+      </property>
+      <property name="dragDropOverwriteMode">
+       <bool>false</bool>
+      </property>
+      <property name="selectionMode">
+       <enum>QAbstractItemView::MultiSelection</enum>
+      </property>
+      <property name="selectionBehavior">
+       <enum>QAbstractItemView::SelectRows</enum>
+      </property>
+      <attribute name="horizontalHeaderCascadingSectionResizes">
+       <bool>true</bool>
+      </attribute>
+      <attribute name="horizontalHeaderDefaultSectionSize">
+       <number>125</number>
+      </attribute>
+      <attribute name="horizontalHeaderStretchLastSection">
+       <bool>true</bool>
+      </attribute>
+      <attribute name="verticalHeaderVisible">
+       <bool>false</bool>
+      </attribute>
+      <attribute name="verticalHeaderHighlightSections">
+       <bool>false</bool>
+      </attribute>
+     </widget>
+    </item>
     <item row="0" column="0">
-     <layout class="QGridLayout" name="internalgrid">
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>25</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
+     <layout class="QHBoxLayout" name="Filters">
       <property name="spacing">
        <number>25</number>
       </property>
-      <item row="3" column="0" colspan="5">
-       <widget class="QTableView" name="database">
-        <property name="frameShape">
-         <enum>QFrame::Panel</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Raised</enum>
-        </property>
-        <property name="sizeAdjustPolicy">
-         <enum>QAbstractScrollArea::AdjustToContents</enum>
-        </property>
-        <property name="editTriggers">
-         <set>QAbstractItemView::NoEditTriggers</set>
-        </property>
-        <property name="dragDropOverwriteMode">
-         <bool>false</bool>
-        </property>
-        <property name="selectionMode">
-         <enum>QAbstractItemView::MultiSelection</enum>
-        </property>
-        <property name="selectionBehavior">
-         <enum>QAbstractItemView::SelectRows</enum>
-        </property>
-        <attribute name="horizontalHeaderCascadingSectionResizes">
-         <bool>true</bool>
-        </attribute>
-        <attribute name="horizontalHeaderDefaultSectionSize">
-         <number>125</number>
-        </attribute>
-        <attribute name="horizontalHeaderStretchLastSection">
-         <bool>true</bool>
-        </attribute>
-        <attribute name="verticalHeaderVisible">
-         <bool>false</bool>
-        </attribute>
-        <attribute name="verticalHeaderHighlightSections">
-         <bool>false</bool>
-        </attribute>
-       </widget>
+      <property name="leftMargin">
+       <number>25</number>
+      </property>
+      <property name="rightMargin">
+       <number>25</number>
+      </property>
+      <item>
+       <widget class="QComboBox" name="selectfield"/>
       </item>
-      <item row="5" column="2">
-       <widget class="QPushButton" name="upgrade">
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>25</height>
-         </size>
-        </property>
+      <item>
+       <widget class="QLineEdit" name="input">
         <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Upgrade system&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Write package name and press Enter&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
-        <property name="icon">
-         <iconset>
-          <normaloff>../icon/upgrade.png</normaloff>../icon/upgrade.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
+        <property name="clearButtonEnabled">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
-      <item row="5" column="0">
+      <item>
+       <widget class="QComboBox" name="selectfilter"/>
+      </item>
+     </layout>
+    </item>
+    <item row="2" column="0">
+     <layout class="QHBoxLayout" name="Buttons">
+      <property name="spacing">
+       <number>25</number>
+      </property>
+      <property name="leftMargin">
+       <number>25</number>
+      </property>
+      <property name="rightMargin">
+       <number>25</number>
+      </property>
+      <item>
        <widget class="QPushButton" name="install">
         <property name="maximumSize">
          <size>
@@ -160,7 +163,7 @@
         </property>
        </widget>
       </item>
-      <item row="5" column="1">
+      <item>
        <widget class="QPushButton" name="uninstall">
         <property name="maximumSize">
          <size>
@@ -186,7 +189,30 @@
         </property>
        </widget>
       </item>
-      <item row="5" column="3">
+      <item>
+       <widget class="QPushButton" name="upgrade">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Upgrade system&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="icon">
+         <iconset>
+          <normaloff>../icon/upgrade.png</normaloff>../icon/upgrade.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="orphans">
         <property name="maximumSize">
          <size>
@@ -212,7 +238,7 @@
         </property>
        </widget>
       </item>
-      <item row="5" column="4">
+      <item>
        <widget class="QPushButton" name="abort">
         <property name="maximumSize">
          <size>
@@ -235,25 +261,9 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="1" colspan="3">
-       <widget class="QLineEdit" name="input">
-        <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Write package name and press Enter&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-        <property name="clearButtonEnabled">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QComboBox" name="selectfield"/>
-      </item>
-      <item row="1" column="4">
-       <widget class="QComboBox" name="selectfilter"/>
-      </item>
      </layout>
     </item>
-    <item row="1" column="0">
+    <item row="3" column="0">
      <widget class="QProgressBar" name="progress">
       <property name="maximumSize">
        <size>
