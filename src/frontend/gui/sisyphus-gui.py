@@ -9,7 +9,6 @@ class Sisyphus(QtWidgets.QMainWindow):
         super(Sisyphus, self).__init__()
         uic.loadUi('ui/sisyphus-gui.ui', self)
         self.centerOnScreen()
-        self.updateSystem()
         self.show()
         self.progress.hide()
         
@@ -40,6 +39,9 @@ class Sisyphus(QtWidgets.QMainWindow):
 
         self.input.textEdited.connect(self.filterDatabase)
 
+        self.updateThread = UpdateThread()
+        self.updateThread.updateFinished.connect(self.finishedUpdate)
+
         self.installThread = InstallThread()
         self.install.clicked.connect(self.packageInstall)
         self.installThread.installFinished.connect(self.finishedInstall)
@@ -55,6 +57,9 @@ class Sisyphus(QtWidgets.QMainWindow):
         self.orphansThread = OrphansThread()
         self.orphans.clicked.connect(self.orphansRemove)
         self.orphansThread.orphansFinished.connect(self.finishedOrphans)
+
+        self.updateSystem()
+        self.finishedUpdate()
 
         self.abort.clicked.connect(self.sisyphusExit)
         
@@ -103,8 +108,10 @@ class Sisyphus(QtWidgets.QMainWindow):
         self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM,Sisyphus.SEARCHFILTER)
 
     def updateSystem(self):
-        self.updateThread = UpdateThread()
         self.updateThread.start()
+
+    def finishedUpdate(self):
+        self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM,Sisyphus.SEARCHFILTER)
 
     def packageInstall(self):
         indexes = self.database.selectionModel().selectedRows(1)
@@ -184,6 +191,7 @@ class UpdateThread(QtCore.QThread):
     updateFinished = QtCore.pyqtSignal()
     def run(self):
         sisyphus_pkg_system_update()
+        self.updateFinished.emit()
 
 class InstallThread(QtCore.QThread):
     installFinished = QtCore.pyqtSignal()
