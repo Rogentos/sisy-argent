@@ -39,23 +39,27 @@ class Sisyphus(QtWidgets.QMainWindow):
 
         self.updateThread = UpdateThread()
         self.updateThread.started.connect(self.showProgressBar)
-        self.updateThread.finished.connect(self.finishedUpdate)
+        self.updateThread.finished.connect(self.jobDone)
 
         self.installThread = InstallThread()
         self.install.clicked.connect(self.packageInstall)
-        self.installThread.finished.connect(self.finishedInstall)
+        self.installThread.started.connect(self.showProgressBar)
+        self.installThread.finished.connect(self.jobDone)
 
         self.uninstallThread = UninstallThread()
         self.uninstall.clicked.connect(self.packageUninstall)
-        self.uninstallThread.finished.connect(self.finishedUninstall)
+        self.uninstallThread.started.connect(self.showProgressBar)
+        self.uninstallThread.finished.connect(self.jobDone)
 
         self.upgradeThread = UpgradeThread()
         self.upgrade.clicked.connect(self.systemUpgrade)
-        self.upgradeThread.finished.connect(self.finishedUpgrade)
+        self.upgradeThread.started.connect(self.showProgressBar)
+        self.upgradeThread.finished.connect(self.jobDone)
 
         self.orphansThread = OrphansThread()
         self.orphans.clicked.connect(self.orphansRemove)
-        self.orphansThread.finished.connect(self.finishedOrphans)
+        self.orphansThread.started.connect(self.showProgressBar)
+        self.orphansThread.finished.connect(self.jobDone)
 
         self.updateSystem()
         self.progress.hide()
@@ -110,10 +114,6 @@ class Sisyphus(QtWidgets.QMainWindow):
         self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM,Sisyphus.SEARCHFILTER)
         self.updateThread.start()
 
-    def finishedUpdate(self):
-        self.hideProgressBar()
-        self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM,Sisyphus.SEARCHFILTER)
-
     def packageInstall(self):
         indexes = self.database.selectionModel().selectedRows(1)
         if len(indexes) == 0:
@@ -122,12 +122,7 @@ class Sisyphus(QtWidgets.QMainWindow):
             Sisyphus.PKGLIST = []
             for index in sorted(indexes):
                 Sisyphus.PKGLIST.append(index.data())
-            self.showProgressBar()
             self.installThread.start()
-
-    def finishedInstall(self):
-        self.hideProgressBar()
-        self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM,Sisyphus.SEARCHFILTER)
 
     def packageUninstall(self):
         indexes = self.database.selectionModel().selectedRows(1)
@@ -137,26 +132,15 @@ class Sisyphus(QtWidgets.QMainWindow):
             Sisyphus.PKGLIST = []
             for index in sorted(indexes):
                 Sisyphus.PKGLIST.append(index.data())
-            self.showProgressBar()
             self.uninstallThread.start()
 
-    def finishedUninstall(self):
-        self.hideProgressBar()
-        self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM,Sisyphus.SEARCHFILTER)
-
     def systemUpgrade(self):
-        self.showProgressBar()
         self.upgradeThread.start()
 
-    def finishedUpgrade(self):
-        self.hideProgressBar()
-        self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM,Sisyphus.SEARCHFILTER)
-
     def orphansRemove(self):
-        self.showProgressBar()
         self.orphansThread.start()
 
-    def finishedOrphans(self):
+    def jobDone(self):
         self.hideProgressBar()
         self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM,Sisyphus.SEARCHFILTER)
 
