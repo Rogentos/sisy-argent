@@ -10,7 +10,6 @@ class Sisyphus(QtWidgets.QMainWindow):
         uic.loadUi('ui/sisyphus-gui.ui', self)
         self.centerOnScreen()
         self.show()
-        self.progress.hide()
         
         self.SEARCHFIELDS = OrderedDict ([
             ('Category', 'cat'),
@@ -35,31 +34,31 @@ class Sisyphus(QtWidgets.QMainWindow):
         Sisyphus.SEARCHTERM = "'%%'"
         Sisyphus.SEARCHFIELD = self.SEARCHFIELDS['Name']
         Sisyphus.SEARCHFILTER = self.SEARCHFILTERS['All']
-        self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM,Sisyphus.SEARCHFILTER)
 
         self.input.textEdited.connect(self.filterDatabase)
 
         self.updateThread = UpdateThread()
-        self.updateThread.updateFinished.connect(self.finishedUpdate)
+        self.updateThread.started.connect(self.showProgressBar)
+        self.updateThread.finished.connect(self.finishedUpdate)
 
         self.installThread = InstallThread()
         self.install.clicked.connect(self.packageInstall)
-        self.installThread.installFinished.connect(self.finishedInstall)
+        self.installThread.finished.connect(self.finishedInstall)
 
         self.uninstallThread = UninstallThread()
         self.uninstall.clicked.connect(self.packageUninstall)
-        self.uninstallThread.uninstallFinished.connect(self.finishedUninstall)
+        self.uninstallThread.finished.connect(self.finishedUninstall)
 
         self.upgradeThread = UpgradeThread()
         self.upgrade.clicked.connect(self.systemUpgrade)
-        self.upgradeThread.upgradeFinished.connect(self.finishedUpgrade)
+        self.upgradeThread.finished.connect(self.finishedUpgrade)
 
         self.orphansThread = OrphansThread()
         self.orphans.clicked.connect(self.orphansRemove)
-        self.orphansThread.orphansFinished.connect(self.finishedOrphans)
+        self.orphansThread.finished.connect(self.finishedOrphans)
 
         self.updateSystem()
-        self.finishedUpdate()
+        self.progress.hide()
 
         self.abort.clicked.connect(self.sisyphusExit)
         
@@ -108,9 +107,11 @@ class Sisyphus(QtWidgets.QMainWindow):
         self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM,Sisyphus.SEARCHFILTER)
 
     def updateSystem(self):
+        self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM,Sisyphus.SEARCHFILTER)
         self.updateThread.start()
 
     def finishedUpdate(self):
+        self.hideProgressBar()
         self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM,Sisyphus.SEARCHFILTER)
 
     def packageInstall(self):
@@ -188,36 +189,26 @@ class Sisyphus(QtWidgets.QMainWindow):
         self.close()
 
 class UpdateThread(QtCore.QThread):
-    updateFinished = QtCore.pyqtSignal()
     def run(self):
         sisyphus_pkg_system_update()
-        self.updateFinished.emit()
 
 class InstallThread(QtCore.QThread):
-    installFinished = QtCore.pyqtSignal()
     def run(self):
         PKGLIST = Sisyphus.PKGLIST
         sisyphus_pkg_auto_install(PKGLIST)
-        self.installFinished.emit()
 
 class UninstallThread(QtCore.QThread):
-    uninstallFinished = QtCore.pyqtSignal()
     def run(self):
         PKGLIST = Sisyphus.PKGLIST
         sisyphus_pkg_auto_uninstall(PKGLIST)
-        self.uninstallFinished.emit()
 
 class UpgradeThread(QtCore.QThread):
-    upgradeFinished = QtCore.pyqtSignal()
     def run(self):
         sisyphus_pkg_auto_system_upgrade()
-        self.upgradeFinished.emit()
 
 class OrphansThread(QtCore.QThread):
-    orphansFinished = QtCore.pyqtSignal()
     def run(self):
         sisyphus_pkg_auto_remove_orphans()
-        self.orphansFinished.emit()
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
