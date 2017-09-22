@@ -10,6 +10,7 @@ import urllib3
 import subprocess
 import animation
 import time
+import atexit
 
 redcore_portage_tree_path = '/usr/portage'
 redcore_desktop_overlay_path = '/var/lib/layman/redcore-desktop'
@@ -58,7 +59,7 @@ def check_redcore_portage_tree():
 
 def check_redcore_desktop_overlay():
     os.chdir(redcore_desktop_overlay_path)
-    subprocess.call(['git', 'remote', 'update'], stdout=BLACKHOLE, stderr=subprocess.STDOUT)
+    subprocess.check_call(['git', 'remote', 'update'], stdout=BLACKHOLE, stderr=subprocess.STDOUT)
     redcore_desktop_overlay_local_hash = subprocess.check_output(['git', 'rev-parse', '@'])
     redcore_desktop_overlay_remote_hash = subprocess.check_output(['git', 'rev-parse', '@{u}'])
 
@@ -68,7 +69,7 @@ def check_redcore_desktop_overlay():
 
 def check_redcore_portage_config():
     os.chdir(redcore_portage_config_path)
-    subprocess.call(['git', 'remote', 'update'], stdout=BLACKHOLE, stderr=subprocess.STDOUT)
+    subprocess.check_call(['git', 'remote', 'update'], stdout=BLACKHOLE, stderr=subprocess.STDOUT)
     redcore_portage_config_local_hash = subprocess.check_output(['git', 'rev-parse', '@'])
     redcore_portage_config_remote_hash = subprocess.check_output(['git', 'rev-parse', '@{u}'])
 
@@ -108,7 +109,7 @@ def check_sync():
 
 @animation.wait('fetching remote ebuilds')
 def sync_redcore_portage_tree_and_desktop_overlay():
-    subprocess.call(['emerge', '--sync', '--quiet'])
+    subprocess.check_call(['emerge', '--sync', '--quiet'])
 
 @animation.wait('fetching remote configs')
 def sync_redcore_portage_config():
@@ -139,10 +140,10 @@ def redcore_sync():
     sync_sisyphus_database_remote_packages_table()
 
 def generate_sisyphus_local_packages_table_csv_pre():
-    subprocess.call(['/usr/share/sisyphus/helpers/make_local_csv_pre']) # this is really hard to do in python, so we cheat with a bash helper script
+    subprocess.check_call(['/usr/share/sisyphus/helpers/make_local_csv_pre']) # this is really hard to do in python, so we cheat with a bash helper script
 
 def generate_sisyphus_local_packages_table_csv_post():
-    subprocess.call(['/usr/share/sisyphus/helpers/make_local_csv_post']) # this is really hard to do in python, so we cheat with a bash helper script
+    subprocess.check_call(['/usr/share/sisyphus/helpers/make_local_csv_post']) # this is really hard to do in python, so we cheat with a bash helper script
 
 def sync_sisyphus_local_packages_table_csv():
     if not filecmp.cmp(sisyphus_local_csv_path_pre, sisyphus_local_csv_path_post):
@@ -157,7 +158,7 @@ def sync_sisyphus_local_packages_table_csv():
     shutil.move(sisyphus_local_csv_path_post, sisyphus_local_csv_path_pre)
 
 def generate_sisyphus_spm_csv():
-    subprocess.call(['/usr/share/sisyphus/helpers/make_spmsync_csv']) # this is really hard to do in python, so we cheat using a bash helper script
+    subprocess.check_call(['/usr/share/sisyphus/helpers/make_spmsync_csv']) # this is really hard to do in python, so we cheat using a bash helper script
 
 def sync_sisyphus_spm_csv():
     sisyphusdb = sqlite3.connect(sisyphus_database_path)
@@ -178,81 +179,104 @@ def sisyphus_pkg_spmsync():
 def sisyphus_pkg_install(PKGLIST):
     check_sync()
     generate_sisyphus_local_packages_table_csv_pre()
-    subprocess.call(['emerge', '-a'] + PKGLIST)
+    portage_call = subprocess.Popen(['emerge', '-a'] + PKGLIST)
+    atexit.register(kill_bg_portage, portage_call)
+    portage_call.communicate()
     generate_sisyphus_local_packages_table_csv_post()
     sync_sisyphus_local_packages_table_csv()
 
 def sisyphus_pkg_auto_install(PKGLIST):
     redcore_sync()
     generate_sisyphus_local_packages_table_csv_pre()
-    subprocess.call(['emerge'] + PKGLIST)
+    portage_call = subprocess.Popen(['emerge'] + PKGLIST)
+    atexit.register(kill_bg_portage, portage_call)
+    portage_call.communicate()
     generate_sisyphus_local_packages_table_csv_post()
     sync_sisyphus_local_packages_table_csv()
 
 def sisyphus_pkg_uninstall(PKGLIST):
     check_sync()
     generate_sisyphus_local_packages_table_csv_pre()
-    subprocess.call(['emerge', '--depclean', '-a'] + PKGLIST)
+    portage_call = subprocess.Popen(['emerge', '--depclean', '-a'] + PKGLIST)
+    atexit.register(kill_bg_portage, portage_call)
+    portage_call.communicate()
     generate_sisyphus_local_packages_table_csv_post()
     sync_sisyphus_local_packages_table_csv()
 
 def sisyphus_pkg_auto_uninstall(PKGLIST):
     redcore_sync()
     generate_sisyphus_local_packages_table_csv_pre()
-    subprocess.call(['emerge', '--depclean'] + PKGLIST)
+    portage_call = subprocess.Popen(['emerge', '--depclean'] + PKGLIST)
+    atexit.register(kill_bg_portage, portage_call)
+    portage_call.communicate()
     generate_sisyphus_local_packages_table_csv_post()
     sync_sisyphus_local_packages_table_csv()
 
 def sisyphus_pkg_force_uninstall(PKGLIST):
     check_sync()
     generate_sisyphus_local_packages_table_csv_pre()
-    subprocess.call(['emerge', '--unmerge', '-a'] + PKGLIST)
+    portage_call = subprocess.Popen(['emerge', '--unmerge', '-a'] + PKGLIST)
+    atexit.register(kill_bg_portage, portage_call)
+    portage_call.communicate()
     generate_sisyphus_local_packages_table_csv_post()
     sync_sisyphus_local_packages_table_csv()
 
 def sisyphus_pkg_auto_force_uninstall(PKGLIST):
     redcore_sync()
     generate_sisyphus_local_packages_table_csv_pre()
-    subprocess.call(['emerge', '--unmerge'] + PKGLIST)
+    portage_call = subprocess.Popen(['emerge', '--unmerge'] + PKGLIST)
+    atexit.register(kill_bg_portage, portage_call)
+    portage_call.communicate()
     generate_sisyphus_local_packages_table_csv_post()
     sync_sisyphus_local_packages_table_csv()
 
 def sisyphus_pkg_remove_orphans():
     check_sync()
     generate_sisyphus_local_packages_table_csv_pre()
-    subprocess.call(['emerge', '--depclean', '-a'])
+    portage_call = subprocess.Popen(['emerge', '--depclean', '-a'])
+    atexit.register(kill_bg_portage, portage_call)
+    portage_call.communicate()
     generate_sisyphus_local_packages_table_csv_post()
     sync_sisyphus_local_packages_table_csv()
 
 def sisyphus_pkg_auto_remove_orphans():
     redcore_sync()
     generate_sisyphus_local_packages_table_csv_pre()
-    subprocess.call(['emerge', '--depclean', '-q'])
+    portage_call = subprocess.Popen(['emerge', '--depclean', '-q'])
+    atexit.register(kill_bg_portage, portage_call)
+    portage_call.communicate()
     generate_sisyphus_local_packages_table_csv_post()
     sync_sisyphus_local_packages_table_csv()
 
 def sisyphus_pkg_system_upgrade():
     check_sync()
     generate_sisyphus_local_packages_table_csv_pre()
-    subprocess.call(['emerge', '-uDaN', '--with-bdeps=y', '@world'])
+    portage_call = subprocess.Popen(['emerge', '-uDaN', '--with-bdeps=y', '@world'])
+    atexit.register(kill_bg_portage, portage_call)
+    portage_call.communicate()
     generate_sisyphus_local_packages_table_csv_post()
     sync_sisyphus_local_packages_table_csv()
 
 def sisyphus_pkg_auto_system_upgrade():
     redcore_sync()
     generate_sisyphus_local_packages_table_csv_pre()
-    subprocess.call(['emerge', '-uDN', '--with-bdeps=y', '@world'])
+    portage_call = subprocess.Popen(['emerge', '-uDN', '--with-bdeps=y', '@world'])
+    atexit.register(kill_bg_portage, portage_call)
+    portage_call.communicate()
     generate_sisyphus_local_packages_table_csv_post()
     sync_sisyphus_local_packages_table_csv()
 
 def sisyphus_pkg_search(PKGLIST):
-    subprocess.call(['emerge', '--search'] + PKGLIST)
+    subprocess.check_call(['emerge', '--search'] + PKGLIST)
 
 def sisyphus_pkg_system_update():
     redcore_sync()
 
 def sisyphus_pkg_sysinfo():
-    subprocess.call(['emerge', '--info'])
+    subprocess.check_call(['emerge', '--info'])
+
+def kill_bg_portage(bg_portage):
+        bg_portage.terminate()
 
 def sisyphus_pkg_help():
     print("\nUsage : sisyphus command [package(s)] || [file(s)]\n")
