@@ -87,13 +87,13 @@ class Sisyphus(QtWidgets.QMainWindow):
 
     def setSearchField(self):
         Sisyphus.SEARCHFIELD = self.SEARCHFIELDS[self.selectfield.currentText()]
-        self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM,Sisyphus.SEARCHFILTER)
+        self.loadDatabase()
         
     def setSearchFilter(self):
         Sisyphus.SEARCHFILTER = self.SEARCHFILTERS[self.selectfilter.currentText()]
-        self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM,Sisyphus.SEARCHFILTER)
+        self.loadDatabase()
 
-    def loadDatabase(self,searchField,searchTerm,searchFilter):
+    def loadDatabase(self):
         with sqlite3.connect('/var/lib/sisyphus/db/sisyphus.db') as db:
             cursor=db.cursor()
             cursor.execute('''SELECT
@@ -108,7 +108,7 @@ class Sisyphus(QtWidgets.QMainWindow):
                             AND a.name = i.name
                             AND a.slot = i.slot
                             WHERE %s LIKE %s %s
-                        ''' % (searchField, searchTerm, searchFilter))
+                        ''' % (Sisyphus.SEARCHFIELD, Sisyphus.SEARCHTERM, Sisyphus.SEARCHFILTER))
             rows = cursor.fetchall()
             Sisyphus.PKGCOUNT = len(rows)
             Sisyphus.PKGSELECTED = 0
@@ -125,10 +125,10 @@ class Sisyphus(QtWidgets.QMainWindow):
     def filterDatabase(self):
         search = self.input.text()
         Sisyphus.SEARCHTERM = "'%" + search + "%'"
-        self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM,Sisyphus.SEARCHFILTER)
+        self.loadDatabase()
 
     def updateSystem(self):
-        self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM,Sisyphus.SEARCHFILTER)
+        self.loadDatabase()
         self.updateThread.start()
 
     def packageInstall(self):
@@ -159,7 +159,7 @@ class Sisyphus(QtWidgets.QMainWindow):
 
     def jobDone(self):
         self.hideProgressBar()
-        self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM,Sisyphus.SEARCHFILTER)
+        self.loadDatabase()
 
     def showProgressBar(self):
         self.hideButtons()
