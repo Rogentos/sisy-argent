@@ -27,8 +27,7 @@ class Sisyphus(QtWidgets.QMainWindow):
             ('All', ''),
             ('Available', 'AND iv IS NULL'),
             ('Installed', 'AND iv IS NOT NULL'),
-            ('Upgradable', 'AND iv < av'),
-            ('Downgradable', 'AND iv > av')
+            ('Upgradable', 'AND iv <> av')
             ])
         Sisyphus.SEARCHFILTER = self.SEARCHFILTERS['All']
         
