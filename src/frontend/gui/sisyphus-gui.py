@@ -93,7 +93,7 @@ class Sisyphus(QtWidgets.QMainWindow):
         self.loadDatabase()
 
     def loadDatabase(self):
-        with sqlite3.connect('/var/lib/sisyphus/db/sisyphus.db') as db:
+        with sqlite3.connect(sisyphus_database_path) as db:
             cursor=db.cursor()
             FILTEROUT = "'%" + "virtual" + "%'"
             cursor.execute('''SELECT
