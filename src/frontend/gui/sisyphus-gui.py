@@ -11,6 +11,8 @@ class Sisyphus(QtWidgets.QMainWindow):
         self.centerOnScreen()
         self.show()
         
+# set globals
+
         self.SEARCHFIELDS = OrderedDict ([
             ('Category', 'cat'),
             ('Name', 'pn'),
@@ -19,7 +21,8 @@ class Sisyphus(QtWidgets.QMainWindow):
         self.selectfield.addItems(self.SEARCHFIELDS.keys())
         self.selectfield.setCurrentIndex(1)
         self.selectfield.currentIndexChanged.connect(self.setSearchField)
-        
+        Sisyphus.SEARCHFIELD = self.SEARCHFIELDS['Name']
+             
         self.SEARCHFILTERS = OrderedDict ([
             ('All', ''),
             ('Available', 'AND iv IS NULL'),
@@ -27,14 +30,18 @@ class Sisyphus(QtWidgets.QMainWindow):
             ('Upgradable', 'AND iv < av'),
             ('Downgradable', 'AND iv > av')
             ])
+        Sisyphus.SEARCHFILTER = self.SEARCHFILTERS['All']
+        
+        Sisyphus.SEARCHTERM = "'%%'"
+
+# connect signals
+
         self.selectfilter.addItems(self.SEARCHFILTERS.keys())
         self.selectfilter.setCurrentIndex(0)
         self.selectfilter.currentIndexChanged.connect(self.setSearchFilter)
-                
-        Sisyphus.SEARCHTERM = "'%%'"
-        Sisyphus.SEARCHFIELD = self.SEARCHFIELDS['Name']
-        Sisyphus.SEARCHFILTER = self.SEARCHFILTERS['All']
-
+        
+        self.database.clicked.connect(self.rowClicked)
+        
         self.input.textEdited.connect(self.filterDatabase)
 
         self.updateThread = UpdateThread()
@@ -66,6 +73,18 @@ class Sisyphus(QtWidgets.QMainWindow):
 
         self.abort.clicked.connect(self.sisyphusExit)
         
+    def centerOnScreen(self):
+        resolution = QtWidgets.QDesktopWidget().screenGeometry()
+        self.move((resolution.width() / 2) - (self.frameSize().width() / 2),
+                    (resolution.height() / 2) - (self.frameSize().height() / 2))
+        
+    def rowClicked(self):
+        Sisyphus.PKGSELECTED = len(self.database.selectionModel().selectedRows())
+        self.showPackageCount()
+
+    def showPackageCount(self):
+        self.statusBar().showMessage("Found: %d, Selected: %d packages" %(Sisyphus.PKGCOUNT, Sisyphus.PKGSELECTED))
+
     def setSearchField(self):
         Sisyphus.SEARCHFIELD = self.SEARCHFIELDS[self.selectfield.currentText()]
         self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM,Sisyphus.SEARCHFILTER)
@@ -73,11 +92,6 @@ class Sisyphus(QtWidgets.QMainWindow):
     def setSearchFilter(self):
         Sisyphus.SEARCHFILTER = self.SEARCHFILTERS[self.selectfilter.currentText()]
         self.loadDatabase(Sisyphus.SEARCHFIELD,Sisyphus.SEARCHTERM,Sisyphus.SEARCHFILTER)
-        
-    def centerOnScreen(self):
-        resolution = QtWidgets.QDesktopWidget().screenGeometry()
-        self.move((resolution.width() / 2) - (self.frameSize().width() / 2),
-                    (resolution.height() / 2) - (self.frameSize().height() / 2))
 
     def loadDatabase(self,searchField,searchTerm,searchFilter):
         with sqlite3.connect('/var/lib/sisyphus/db/sisyphus.db') as db:
@@ -96,6 +110,8 @@ class Sisyphus(QtWidgets.QMainWindow):
                             WHERE %s LIKE %s %s
                         ''' % (searchField, searchTerm, searchFilter))
             rows = cursor.fetchall()
+            Sisyphus.PKGCOUNT = len(rows)
+            Sisyphus.PKGSELECTED = 0
             model = QtGui.QStandardItemModel(len(rows), 5)
             model.setHorizontalHeaderLabels(['Category', 'Name', 'Available Version', 'Installed Version', 'Description'])
             for row in rows:
@@ -104,6 +120,7 @@ class Sisyphus(QtWidgets.QMainWindow):
                     item = QtGui.QStandardItem("%s"%(row[column]))
                     model.setItem(indx, column, item)
             self.database.setModel(model)
+            self.showPackageCount()
 
     def filterDatabase(self):
         search = self.input.text()
