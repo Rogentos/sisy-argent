@@ -96,6 +96,7 @@ class Sisyphus(QtWidgets.QMainWindow):
     def loadDatabase(self):
         with sqlite3.connect('/var/lib/sisyphus/db/sisyphus.db') as db:
             cursor=db.cursor()
+            filterOut = "'%" + "virtual" + "%'"
             cursor.execute('''SELECT
                             a.category AS cat,
                             a.name AS pn,
@@ -108,7 +109,8 @@ class Sisyphus(QtWidgets.QMainWindow):
                             AND a.name = i.name
                             AND a.slot = i.slot
                             WHERE %s LIKE %s %s
-                        ''' % (Sisyphus.SEARCHFIELD, Sisyphus.SEARCHTERM, Sisyphus.SEARCHFILTER))
+                            AND cat NOT LIKE %s
+                        ''' % (Sisyphus.SEARCHFIELD, Sisyphus.SEARCHTERM, Sisyphus.SEARCHFILTER, filterOut))
             rows = cursor.fetchall()
             Sisyphus.PKGCOUNT = len(rows)
             Sisyphus.PKGSELECTED = 0
