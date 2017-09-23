@@ -135,7 +135,7 @@ class Sisyphus(QtWidgets.QMainWindow):
     def packageInstall(self):
         indexes = self.database.selectionModel().selectedRows(1)
         if len(indexes) == 0:
-            self.input.setText("Please select at least one package!!!")
+            self.statusBar().showMessage("No package selected, please pick at least one!", 3000)
         else:
             Sisyphus.PKGLIST = []
             for index in sorted(indexes):
@@ -145,7 +145,7 @@ class Sisyphus(QtWidgets.QMainWindow):
     def packageUninstall(self):
         indexes = self.database.selectionModel().selectedRows(1)
         if len(indexes) == 0:
-            self.input.setText("Please select at least one package!!!")
+            self.statusBar().showMessage("No package selected, please pick at least one!", 3000)
         else:
             Sisyphus.PKGLIST = []
             for index in sorted(indexes):
