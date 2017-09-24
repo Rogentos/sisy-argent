@@ -27,7 +27,8 @@ class Sisyphus(QtWidgets.QMainWindow):
             ('All', ''),
             ('Available', 'AND iv IS NULL'),
             ('Installed', 'AND iv IS NOT NULL'),
-            ('Upgradable', 'AND iv <> av')
+            ('Upgradable', 'AND iv <> av'),
+            ('Removable', 'AND rmv = "yes"')
             ])
         Sisyphus.SEARCHFILTER = self.SEARCHFILTERS['All']
         
@@ -72,6 +73,9 @@ class Sisyphus(QtWidgets.QMainWindow):
 
         self.abort.clicked.connect(self.sisyphusExit)
         
+        #hide removable column
+        self.database.horizontalHeader().hideSection(5)
+        
     def centerOnScreen(self):
         resolution = QtWidgets.QDesktopWidget().screenGeometry()
         self.move((resolution.width() / 2) - (self.frameSize().width() / 2),
@@ -101,22 +105,27 @@ class Sisyphus(QtWidgets.QMainWindow):
                             a.name AS pn,
                             a.version AS av,
                             i.version AS iv,
-                            a.description AS descr
+                            a.description AS descr,
+                            CASE WHEN rm.name ISNULL THEN 'no' ELSE 'yes' END AS rmv
                             FROM remote_packages AS a
                             LEFT JOIN local_packages AS i
                             ON a.category = i.category
                             AND a.name = i.name
                             AND a.slot = i.slot
+                            LEFT JOIN removeable_packages as rm
+                            ON i.category = rm.category
+                            AND i.name = rm.name
+                            AND i.slot = rm.slot
                             WHERE %s LIKE %s %s %s
                         ''' % (Sisyphus.SEARCHFIELD, Sisyphus.SEARCHTERM, Sisyphus.SEARCHFILTER, FILTEROUT))
             rows = cursor.fetchall()
             Sisyphus.PKGCOUNT = len(rows)
             Sisyphus.PKGSELECTED = 0
             model = QtGui.QStandardItemModel(len(rows), 5)
-            model.setHorizontalHeaderLabels(['Category', 'Name', 'Available Version', 'Installed Version', 'Description'])
+            model.setHorizontalHeaderLabels(['Category', 'Name', 'Available Version', 'Installed Version', 'Description', 'Rmv'])
             for row in rows:
                 indx = rows.index(row)
-                for column in range(0, 5):
+                for column in range(0, 6):
                     item = QtGui.QStandardItem("%s"%(row[column]))
                     model.setItem(indx, column, item)
             self.database.setModel(model)
