@@ -73,8 +73,6 @@ class Sisyphus(QtWidgets.QMainWindow):
 
         self.abort.clicked.connect(self.sisyphusExit)
         
-        #hide removable column
-        self.database.horizontalHeader().hideSection(5)
         
     def centerOnScreen(self):
         resolution = QtWidgets.QDesktopWidget().screenGeometry()
@@ -122,10 +120,10 @@ class Sisyphus(QtWidgets.QMainWindow):
             Sisyphus.PKGCOUNT = len(rows)
             Sisyphus.PKGSELECTED = 0
             model = QtGui.QStandardItemModel(len(rows), 5)
-            model.setHorizontalHeaderLabels(['Category', 'Name', 'Available Version', 'Installed Version', 'Description', 'Rmv'])
+            model.setHorizontalHeaderLabels(['Category', 'Name', 'Available Version', 'Installed Version', 'Description'])
             for row in rows:
                 indx = rows.index(row)
-                for column in range(0, 6):
+                for column in range(0, 5):
                     item = QtGui.QStandardItem("%s"%(row[column]))
                     model.setItem(indx, column, item)
             self.database.setModel(model)
