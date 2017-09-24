@@ -19,6 +19,9 @@ redcore_portage_config_path = '/opt/redcore-build'
 sisyphus_remote_csv_url = 'http://mirror.math.princeton.edu/pub/redcorelinux/csv/remote_preinst.csv'
 sisyphus_remote_csv_path_pre = '/var/lib/sisyphus/csv/remote_preinst.csv'
 sisyphus_remote_csv_path_post = '/var/lib/sisyphus/csv/remote_postinst.csv'
+sisyphus_removeable_csv_url = 'http://mirror.math.princeton.edu/pub/redcorelinux/csv/removeable_preinst.csv'
+sisyphus_removeable_csv_path_pre = '/var/lib/sisyphus/csv/removeable_preinst.csv'
+sisyphus_removeable_csv_path_post = '/var/lib/sisyphus/csv/removeable_postinst.csv'
 sisyphus_local_csv_path_pre = '/var/lib/sisyphus/csv/local_preinst.csv'
 sisyphus_local_csv_path_post = '/var/lib/sisyphus/csv/local_postinst.csv'
 sisyphus_spm_csv_path = '/var/lib/sisyphus/csv/spmsync.csv'
@@ -88,17 +91,40 @@ def fetch_sisyphus_remote_packages_table_csv():
         with http.request('GET', sisyphus_remote_csv_url, preload_content=False) as tmp_buffer, open(sisyphus_remote_csv_path_post, 'wb') as output_file:
             shutil.copyfileobj(tmp_buffer, output_file)
 
+def fetch_sisyphus_removeable_packages_table_csv():
+    http = urllib3.PoolManager()
+
+    if not os.path.isfile(sisyphus_removeable_csv_path_pre):
+        os.mknod(sisyphus_removeable_csv_path_pre)
+        with http.request('GET', sisyphus_removeable_csv_url, preload_content=False) as tmp_buffer, open(sisyphus_removeable_csv_path_post, 'wb') as output_file:
+            shutil.copyfileobj(tmp_buffer, output_file)
+    else:
+        with http.request('GET', sisyphus_removeable_csv_url, preload_content=False) as tmp_buffer, open(sisyphus_removeable_csv_path_post, 'wb') as output_file:
+            shutil.copyfileobj(tmp_buffer, output_file)
+
 def check_sisyphus_remote_packages_table_csv():
     if not filecmp.cmp(sisyphus_remote_csv_path_pre, sisyphus_remote_csv_path_post):
-        print("\nSisyphus database is out-of-date, run 'sisyphus update' first!\n")
+        print("\nSisyphus remote database is out-of-date, run 'sisyphus update' first!\n")
         os.remove(sisyphus_remote_csv_path_post)
         sys.exit(1)
     else:
         os.remove(sisyphus_remote_csv_path_post)
 
+def check_sisyphus_removeable_packages_table_csv():
+    if not filecmp.cmp(sisyphus_removeable_csv_path_pre, sisyphus_removeable_csv_path_post):
+        print("\nSisyphus removeable database is out-of-date, run 'sisyphus update' first!\n")
+        os.remove(sisyphus_removeable_csv_path_post)
+        sys.exit(1)
+    else:
+        os.remove(sisyphus_removeable_csv_path_post)
+
 def check_sisyphus_remote_packages_table():
     fetch_sisyphus_remote_packages_table_csv()
     check_sisyphus_remote_packages_table_csv()
+
+def check_sisyphus_removeable_packages_table():
+    fetch_sisyphus_removeable_packages_table_csv()
+    check_sisyphus_removeable_packages_table_csv()
 
 def check_sync():
     check_if_root()
@@ -106,17 +132,15 @@ def check_sync():
     check_redcore_desktop_overlay()
     check_redcore_portage_config()
     check_sisyphus_remote_packages_table()
+    check_sisyphus_removeable_packages_table()
 
-@animation.wait('fetching remote ebuilds')
 def sync_redcore_portage_tree_and_desktop_overlay():
     subprocess.check_call(['emerge', '--sync', '--quiet'])
 
-@animation.wait('fetching remote configs')
 def sync_redcore_portage_config():
     os.chdir(redcore_portage_config_path)
     subprocess.call(['git', 'pull', '--quiet'])
 
-@animation.wait('fetching remote database')
 def sync_sisyphus_remote_packages_table_csv():
     if not filecmp.cmp(sisyphus_remote_csv_path_pre, sisyphus_remote_csv_path_post):
         sisyphusdb = sqlite3.connect(sisyphus_database_path)
@@ -128,16 +152,34 @@ def sync_sisyphus_remote_packages_table_csv():
         sisyphusdb.commit()
         sisyphusdb.close()
     shutil.move(sisyphus_remote_csv_path_post, sisyphus_remote_csv_path_pre)
+
+def sync_sisyphus_removeable_packages_table_csv():
+    if not filecmp.cmp(sisyphus_removeable_csv_path_pre, sisyphus_removeable_csv_path_post):
+        sisyphusdb = sqlite3.connect(sisyphus_database_path)
+        sisyphusdb.cursor().execute('''drop table if exists removeable_packages''')
+        sisyphusdb.cursor().execute('''create table removeable_packages (category TEXT,name TEXT,version TEXT,slot TEXT,description TEXT)''')
+        with open(sisyphus_removeable_csv_path_post) as sisyphus_removeable_csv:
+            for row in csv.reader(sisyphus_removeable_csv):
+                sisyphusdb.cursor().execute("insert into removeable_packages (category, name, version, slot, description) values (?, ?, ?, ?, ?);", row)
+        sisyphusdb.commit()
+        sisyphusdb.close()
+    shutil.move(sisyphus_removeable_csv_path_post, sisyphus_removeable_csv_path_pre)
         
 def sync_sisyphus_database_remote_packages_table():
     fetch_sisyphus_remote_packages_table_csv()
     sync_sisyphus_remote_packages_table_csv()
 
+def sync_sisyphus_database_removeable_packages_table():
+    fetch_sisyphus_removeable_packages_table_csv()
+    sync_sisyphus_removeable_packages_table_csv()
+
+@animation.wait('syncing remote databases')
 def redcore_sync():
     check_if_root()
     sync_redcore_portage_tree_and_desktop_overlay()
     sync_redcore_portage_config()
     sync_sisyphus_database_remote_packages_table()
+    sync_sisyphus_database_removeable_packages_table()
 
 def generate_sisyphus_local_packages_table_csv_pre():
     subprocess.check_call(['/usr/share/sisyphus/helpers/make_local_csv_pre']) # this is really hard to do in python, so we cheat with a bash helper script
@@ -171,7 +213,7 @@ def sync_sisyphus_spm_csv():
         sisyphusdb.close()
     os.remove(sisyphus_spm_csv_path)
 
-@animation.wait('syncing databases')
+@animation.wait('syncing local databases')
 def sisyphus_pkg_spmsync():
     generate_sisyphus_spm_csv()
     sync_sisyphus_spm_csv()
