@@ -12,23 +12,23 @@ class Sisyphus(QtWidgets.QMainWindow):
         self.show()
         
         self.SEARCHFIELDS = OrderedDict ([
-            ('Category', 'cat'),
-            ('Name', 'pn'),
-            ('Description', 'descr')
+            ('Search by category', 'cat'),
+            ('Search by description', 'descr'),
+            ('Search by name', 'pn')
             ])
         self.selectfield.addItems(self.SEARCHFIELDS.keys())
-        self.selectfield.setCurrentIndex(1)
+        self.selectfield.setCurrentIndex(2)
         self.selectfield.currentIndexChanged.connect(self.setSearchField)
-        Sisyphus.SEARCHFIELD = self.SEARCHFIELDS['Name']
+        Sisyphus.SEARCHFIELD = self.SEARCHFIELDS['Search by name']
              
         self.SEARCHFILTERS = OrderedDict ([
-            ('All', ''),
-            ('Available', 'AND iv IS NULL'),
-            ('Installed', 'AND iv IS NOT NULL'),
-            ('Upgradable', 'AND iv <> av'),
-            ('Removable', 'AND rmv = "yes"')
+            ('All packages', ''),
+            ('Installed packages', 'AND iv IS NOT NULL'),
+            ('Installable packages', 'AND iv IS NULL'),
+            ('Removable packages', 'AND rmv = "yes"'),
+            ('Upgradable packages', 'AND iv <> av')
             ])
-        Sisyphus.SEARCHFILTER = self.SEARCHFILTERS['All']
+        Sisyphus.SEARCHFILTER = self.SEARCHFILTERS['All packages']
         
         Sisyphus.SEARCHTERM = "'%%'"
 
