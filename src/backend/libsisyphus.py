@@ -1,16 +1,16 @@
 #!/usr/bin/python3
 
+import animation
+import atexit
 import csv
 import filecmp
 import os
 import shutil
 import sqlite3
-import sys
-import urllib3
 import subprocess
-import animation
+import sys
 import time
-import atexit
+import urllib3
 
 redcore_portage_tree_path = '/usr/portage'
 redcore_desktop_overlay_path = '/var/lib/layman/redcore-desktop'
@@ -26,8 +26,6 @@ sisyphus_local_csv_path_pre = '/var/lib/sisyphus/csv/local_preinst.csv'
 sisyphus_local_csv_path_post = '/var/lib/sisyphus/csv/local_postinst.csv'
 sisyphus_spm_csv_path = '/var/lib/sisyphus/csv/spmsync.csv'
 sisyphus_database_path = '/var/lib/sisyphus/db/sisyphus.db'
-
-BLACKHOLE = open(os.devnull, 'w')
 
 def check_if_root():
     if not os.getuid() == 0:
@@ -50,36 +48,6 @@ def check_system_mode():
             print("\nThe system is not set to binmode or mixedmode, refusing to run!\n")
             sys.exit(1)
 
-def check_redcore_portage_tree():
-    os.chdir(redcore_portage_tree_path)
-    subprocess.call(['git', 'remote', 'update'], stdout=BLACKHOLE, stderr=subprocess.STDOUT)
-    redcore_portage_tree_local_hash = subprocess.check_output(['git', 'rev-parse', '@'])
-    redcore_portage_tree_remote_hash = subprocess.check_output(['git', 'rev-parse', '@{u}'])
-
-    if not redcore_portage_tree_local_hash == redcore_portage_tree_remote_hash:
-        print("\nPortage tree is out-of-date, run 'sisyphus update' first!\n")
-        sys.exit(1)
-
-def check_redcore_desktop_overlay():
-    os.chdir(redcore_desktop_overlay_path)
-    subprocess.check_call(['git', 'remote', 'update'], stdout=BLACKHOLE, stderr=subprocess.STDOUT)
-    redcore_desktop_overlay_local_hash = subprocess.check_output(['git', 'rev-parse', '@'])
-    redcore_desktop_overlay_remote_hash = subprocess.check_output(['git', 'rev-parse', '@{u}'])
-
-    if not redcore_desktop_overlay_local_hash == redcore_desktop_overlay_remote_hash:
-        print("\nOverlay is out-of-date, run 'sisyphus update' first!\n")
-        sys.exit(1)
-
-def check_redcore_portage_config():
-    os.chdir(redcore_portage_config_path)
-    subprocess.check_call(['git', 'remote', 'update'], stdout=BLACKHOLE, stderr=subprocess.STDOUT)
-    redcore_portage_config_local_hash = subprocess.check_output(['git', 'rev-parse', '@'])
-    redcore_portage_config_remote_hash = subprocess.check_output(['git', 'rev-parse', '@{u}'])
-
-    if not redcore_portage_config_local_hash == redcore_portage_config_remote_hash:
-        print("\nPortage config is out-of-date, run 'sisyphus update' first!\n")
-        sys.exit(1)
-
 def fetch_sisyphus_remote_packages_table_csv():
     http = urllib3.PoolManager()
     
@@ -101,38 +69,6 @@ def fetch_sisyphus_removeable_packages_table_csv():
     else:
         with http.request('GET', sisyphus_removeable_csv_url, preload_content=False) as tmp_buffer, open(sisyphus_removeable_csv_path_post, 'wb') as output_file:
             shutil.copyfileobj(tmp_buffer, output_file)
-
-def check_sisyphus_remote_packages_table_csv():
-    if not filecmp.cmp(sisyphus_remote_csv_path_pre, sisyphus_remote_csv_path_post):
-        print("\nSisyphus remote database is out-of-date, run 'sisyphus update' first!\n")
-        os.remove(sisyphus_remote_csv_path_post)
-        sys.exit(1)
-    else:
-        os.remove(sisyphus_remote_csv_path_post)
-
-def check_sisyphus_removeable_packages_table_csv():
-    if not filecmp.cmp(sisyphus_removeable_csv_path_pre, sisyphus_removeable_csv_path_post):
-        print("\nSisyphus removeable database is out-of-date, run 'sisyphus update' first!\n")
-        os.remove(sisyphus_removeable_csv_path_post)
-        sys.exit(1)
-    else:
-        os.remove(sisyphus_removeable_csv_path_post)
-
-def check_sisyphus_remote_packages_table():
-    fetch_sisyphus_remote_packages_table_csv()
-    check_sisyphus_remote_packages_table_csv()
-
-def check_sisyphus_removeable_packages_table():
-    fetch_sisyphus_removeable_packages_table_csv()
-    check_sisyphus_removeable_packages_table_csv()
-
-def check_sync():
-    check_if_root()
-    check_redcore_portage_tree()
-    check_redcore_desktop_overlay()
-    check_redcore_portage_config()
-    check_sisyphus_remote_packages_table()
-    check_sisyphus_removeable_packages_table()
 
 def sync_redcore_portage_tree_and_desktop_overlay():
     subprocess.check_call(['emerge', '--sync', '--quiet'])
@@ -219,7 +155,7 @@ def sisyphus_pkg_spmsync():
     sync_sisyphus_spm_csv()
 
 def sisyphus_pkg_install(PKGLIST):
-    check_sync()
+    redcore_sync()
     generate_sisyphus_local_packages_table_csv_pre()
     portage_call = subprocess.Popen(['emerge', '-a'] + PKGLIST)
     atexit.register(kill_bg_portage, portage_call)
@@ -237,7 +173,7 @@ def sisyphus_pkg_auto_install(PKGLIST):
     sync_sisyphus_local_packages_table_csv()
 
 def sisyphus_pkg_uninstall(PKGLIST):
-    check_sync()
+    redcore_sync()
     generate_sisyphus_local_packages_table_csv_pre()
     portage_call = subprocess.Popen(['emerge', '--depclean', '-a'] + PKGLIST)
     atexit.register(kill_bg_portage, portage_call)
@@ -255,7 +191,7 @@ def sisyphus_pkg_auto_uninstall(PKGLIST):
     sync_sisyphus_local_packages_table_csv()
 
 def sisyphus_pkg_force_uninstall(PKGLIST):
-    check_sync()
+    redcore_sync()
     generate_sisyphus_local_packages_table_csv_pre()
     portage_call = subprocess.Popen(['emerge', '--unmerge', '-a'] + PKGLIST)
     atexit.register(kill_bg_portage, portage_call)
@@ -273,7 +209,7 @@ def sisyphus_pkg_auto_force_uninstall(PKGLIST):
     sync_sisyphus_local_packages_table_csv()
 
 def sisyphus_pkg_remove_orphans():
-    check_sync()
+    redcore_sync()
     generate_sisyphus_local_packages_table_csv_pre()
     portage_call = subprocess.Popen(['emerge', '--depclean', '-a'])
     atexit.register(kill_bg_portage, portage_call)
@@ -291,7 +227,7 @@ def sisyphus_pkg_auto_remove_orphans():
     sync_sisyphus_local_packages_table_csv()
 
 def sisyphus_pkg_system_upgrade():
-    check_sync()
+    redcore_sync()
     generate_sisyphus_local_packages_table_csv_pre()
     portage_call = subprocess.Popen(['emerge', '-uDaN', '--with-bdeps=y', '@world'])
     atexit.register(kill_bg_portage, portage_call)
