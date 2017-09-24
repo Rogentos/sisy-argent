@@ -11,8 +11,6 @@ class Sisyphus(QtWidgets.QMainWindow):
         self.centerOnScreen()
         self.show()
         
-# set globals
-
         self.SEARCHFIELDS = OrderedDict ([
             ('Category', 'cat'),
             ('Name', 'pn'),
@@ -33,8 +31,6 @@ class Sisyphus(QtWidgets.QMainWindow):
         Sisyphus.SEARCHFILTER = self.SEARCHFILTERS['All']
         
         Sisyphus.SEARCHTERM = "'%%'"
-
-# connect signals
 
         self.selectfilter.addItems(self.SEARCHFILTERS.keys())
         self.selectfilter.setCurrentIndex(0)
