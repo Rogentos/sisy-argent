@@ -132,6 +132,7 @@ class Sisyphus(QtWidgets.QMainWindow):
 
     def updateSystem(self):
         self.loadDatabase()
+        self.statusBar().showMessage("I am syncing myself, hope to finish soon ...")
         self.updateThread.start()
 
     def packageInstall(self):
@@ -142,6 +143,7 @@ class Sisyphus(QtWidgets.QMainWindow):
             Sisyphus.PKGLIST = []
             for index in sorted(indexes):
                 Sisyphus.PKGLIST.append(index.data())
+            self.statusBar().showMessage("I am installing %d package(s) for you ..." %len(Sisyphus.PKGLIST))
             self.installThread.start()
 
     def packageUninstall(self):
@@ -152,12 +154,15 @@ class Sisyphus(QtWidgets.QMainWindow):
             Sisyphus.PKGLIST = []
             for index in sorted(indexes):
                 Sisyphus.PKGLIST.append(index.data())
+            self.statusBar().showMessage("I am removing %d package(s) from your system ..." %len(Sisyphus.PKGLIST))
             self.uninstallThread.start()
 
     def systemUpgrade(self):
+        self.statusBar().showMessage("I am upgrading what is upgradable, please be patient ...")
         self.upgradeThread.start()
 
     def orphansRemove(self):
+        self.statusBar().showMessage("I am busy with some cleaning, please don't rush me ...")
         self.orphansThread.start()
 
     def jobDone(self):
