@@ -138,7 +138,7 @@ class Sisyphus(QtWidgets.QMainWindow):
     def packageInstall(self):
         indexes = self.database.selectionModel().selectedRows(1)
         if len(indexes) == 0:
-            self.statusBar().showMessage("No package selected, please pick at least one!", 3000)
+            self.statusBar().showMessage("No package selected, please pick at least one!")
         else:
             Sisyphus.PKGLIST = []
             for index in sorted(indexes):
@@ -149,16 +149,16 @@ class Sisyphus(QtWidgets.QMainWindow):
     def packageUninstall(self):
         indexes = self.database.selectionModel().selectedRows(1)
         if len(indexes) == 0:
-            self.statusBar().showMessage("No package selected, please pick at least one!", 3000)
+            self.statusBar().showMessage("No package selected, please pick at least one!")
         else:
             Sisyphus.PKGLIST = []
             for index in sorted(indexes):
                 Sisyphus.PKGLIST.append(index.data())
-            self.statusBar().showMessage("I am removing %d package(s) from your system ..." %len(Sisyphus.PKGLIST))
+            self.statusBar().showMessage("I am removing %d package(s) as requested ..." %len(Sisyphus.PKGLIST))
             self.uninstallThread.start()
 
     def systemUpgrade(self):
-        self.statusBar().showMessage("I am upgrading what is upgradable, please be patient ...")
+        self.statusBar().showMessage("I am upgrading the system, please be patient ...")
         self.upgradeThread.start()
 
     def orphansRemove(self):
