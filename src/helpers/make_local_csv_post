@@ -3,14 +3,14 @@
 collect_local_portage_database() {
 	for i in $(qlist -ICv); do
 		pushd /var/db/pkg/$i > /dev/null 2>&1
-		echo "$(<CATEGORY),$(sed -re "s/-([0-9])/,\1/" <PF),$(<SLOT),$(sed -e "s/\"//g" -e "s/\'//g" -e "s/\,//g" <DESCRIPTION)" >> /tmp/local_postinst.csv
+		echo "$(<CATEGORY),$(sed -re "s/-([0-9])/,\1/" <PF),$(<SLOT),$(<BUILD_TIME),$(sed -e "s/\"//g" -e "s/\'//g" -e "s/\,//g" <DESCRIPTION)" >> /tmp/local_packages_post.csv
 		popd > /dev/null 2>&1
 	done
-	mv /tmp/local_postinst.csv /var/lib/sisyphus/csv/
+	mv /tmp/local_packages_post.csv /var/lib/sisyphus/csv/
 }
 
 clean_temporary_files() {
-	rm -rf /tmp/local_postinst.csv
+	rm -rf /tmp/local_packages_post.csv
 }
 
 main() {

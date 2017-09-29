@@ -16,15 +16,15 @@ redcore_portage_tree_path = '/usr/portage'
 redcore_desktop_overlay_path = '/var/lib/layman/redcore-desktop'
 redcore_portage_config_path = '/opt/redcore-build'
 
-sisyphus_remote_csv_url = 'http://mirror.math.princeton.edu/pub/redcorelinux/csv/remote_preinst.csv'
-sisyphus_remote_csv_path_pre = '/var/lib/sisyphus/csv/remote_preinst.csv'
-sisyphus_remote_csv_path_post = '/var/lib/sisyphus/csv/remote_postinst.csv'
-sisyphus_removeable_csv_url = 'http://mirror.math.princeton.edu/pub/redcorelinux/csv/removeable_preinst.csv'
-sisyphus_removeable_csv_path_pre = '/var/lib/sisyphus/csv/removeable_preinst.csv'
-sisyphus_removeable_csv_path_post = '/var/lib/sisyphus/csv/removeable_postinst.csv'
-sisyphus_local_csv_path_pre = '/var/lib/sisyphus/csv/local_preinst.csv'
-sisyphus_local_csv_path_post = '/var/lib/sisyphus/csv/local_postinst.csv'
-sisyphus_spm_csv_path = '/var/lib/sisyphus/csv/spmsync.csv'
+sisyphus_remote_csv_url = 'http://mirror.math.princeton.edu/pub/redcorelinux/csv/remote_packages_pre.csv'
+sisyphus_remote_csv_path_pre = '/var/lib/sisyphus/csv/remote_packages_pre.csv'
+sisyphus_remote_csv_path_post = '/var/lib/sisyphus/csv/remote_packages_post.csv'
+sisyphus_removeable_csv_url = 'http://mirror.math.princeton.edu/pub/redcorelinux/csv/removeable_packages_pre.csv'
+sisyphus_removeable_csv_path_pre = '/var/lib/sisyphus/csv/removeable_packages_pre.csv'
+sisyphus_removeable_csv_path_post = '/var/lib/sisyphus/csv/removeable_packages_post.csv'
+sisyphus_local_csv_path_pre = '/var/lib/sisyphus/csv/local_packages_pre.csv'
+sisyphus_local_csv_path_post = '/var/lib/sisyphus/csv/local_packages_post.csv'
+sisyphus_spm_csv_path = '/var/lib/sisyphus/csv/portage_spmsync.csv'
 sisyphus_database_path = '/var/lib/sisyphus/db/sisyphus.db'
 
 def check_if_root():
@@ -81,10 +81,10 @@ def sync_sisyphus_remote_packages_table_csv():
     if not filecmp.cmp(sisyphus_remote_csv_path_pre, sisyphus_remote_csv_path_post):
         sisyphusdb = sqlite3.connect(sisyphus_database_path)
         sisyphusdb.cursor().execute('''drop table if exists remote_packages''')
-        sisyphusdb.cursor().execute('''create table remote_packages (category TEXT,name TEXT,version TEXT,slot TEXT,description TEXT)''')
+        sisyphusdb.cursor().execute('''create table remote_packages (category TEXT,name TEXT,version TEXT,slot TEXT,timestamp TEXT,description TEXT)''')
         with open(sisyphus_remote_csv_path_post) as sisyphus_remote_csv:
             for row in csv.reader(sisyphus_remote_csv):
-                sisyphusdb.cursor().execute("insert into remote_packages (category, name, version, slot, description) values (?, ?, ?, ?, ?);", row)
+                sisyphusdb.cursor().execute("insert into remote_packages (category, name, version, slot, timestamp, description) values (?, ?, ?, ?, ?, ?);", row)
         sisyphusdb.commit()
         sisyphusdb.close()
     shutil.move(sisyphus_remote_csv_path_post, sisyphus_remote_csv_path_pre)
@@ -93,10 +93,10 @@ def sync_sisyphus_removeable_packages_table_csv():
     if not filecmp.cmp(sisyphus_removeable_csv_path_pre, sisyphus_removeable_csv_path_post):
         sisyphusdb = sqlite3.connect(sisyphus_database_path)
         sisyphusdb.cursor().execute('''drop table if exists removeable_packages''')
-        sisyphusdb.cursor().execute('''create table removeable_packages (category TEXT,name TEXT,version TEXT,slot TEXT,description TEXT)''')
+        sisyphusdb.cursor().execute('''create table removeable_packages (category TEXT,name TEXT,version TEXT,slot TEXT,timestamp TEXT,description TEXT)''')
         with open(sisyphus_removeable_csv_path_post) as sisyphus_removeable_csv:
             for row in csv.reader(sisyphus_removeable_csv):
-                sisyphusdb.cursor().execute("insert into removeable_packages (category, name, version, slot, description) values (?, ?, ?, ?, ?);", row)
+                sisyphusdb.cursor().execute("insert into removeable_packages (category, name, version, slot, timestamp, description) values (?, ?, ?, ?, ?, ?);", row)
         sisyphusdb.commit()
         sisyphusdb.close()
     shutil.move(sisyphus_removeable_csv_path_post, sisyphus_removeable_csv_path_pre)
@@ -127,10 +127,10 @@ def sync_sisyphus_local_packages_table_csv():
     if not filecmp.cmp(sisyphus_local_csv_path_pre, sisyphus_local_csv_path_post):
         sisyphusdb = sqlite3.connect(sisyphus_database_path)
         sisyphusdb.cursor().execute('''drop table if exists local_packages''')
-        sisyphusdb.cursor().execute('''create table local_packages (category TEXT,name TEXT,version TEXT,slot TEXT,description TEXT)''')
+        sisyphusdb.cursor().execute('''create table local_packages (category TEXT,name TEXT,version TEXT,slot TEXT,timestamp TEXT,description TEXT)''')
         with open(sisyphus_local_csv_path_post) as sisyphus_local_csv:
             for row in csv.reader(sisyphus_local_csv):
-                sisyphusdb.cursor().execute("insert into local_packages (category, name, version, slot, description) values (?, ?, ?, ?, ?);", row)
+                sisyphusdb.cursor().execute("insert into local_packages (category, name, version, slot, timestamp, description) values (?, ?, ?, ?, ?, ?);", row)
         sisyphusdb.commit()
         sisyphusdb.close()
     shutil.move(sisyphus_local_csv_path_post, sisyphus_local_csv_path_pre)
@@ -141,10 +141,10 @@ def generate_sisyphus_spm_csv():
 def sync_sisyphus_spm_csv():
     sisyphusdb = sqlite3.connect(sisyphus_database_path)
     sisyphusdb.cursor().execute('''drop table if exists local_packages''')
-    sisyphusdb.cursor().execute('''create table local_packages (category TEXT,name TEXT,version TEXT,slot TEXT,description TEXT)''')
+    sisyphusdb.cursor().execute('''create table local_packages (category TEXT,name TEXT,version TEXT,slot TEXT,timestamp TEXT,description TEXT)''')
     with open(sisyphus_spm_csv_path) as sisyphus_spm_csv:
         for row in csv.reader(sisyphus_spm_csv):
-            sisyphusdb.cursor().execute("insert into local_packages (category, name, version, slot, description) values (?, ?, ?, ?, ?);", row)
+            sisyphusdb.cursor().execute("insert into local_packages (category, name, version, slot, timestamp, description) values (?, ?, ?, ?, ?, ?);", row)
         sisyphusdb.commit()
         sisyphusdb.close()
     os.remove(sisyphus_spm_csv_path)
