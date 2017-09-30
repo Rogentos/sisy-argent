@@ -17,7 +17,7 @@ if "__main__" == __name__:
     elif "remove-orphans" in sys.argv[1:]:
         sisyphus_pkg_remove_orphans()
     elif "update" in sys.argv[1:]:
-        sisyphus_pkg_system_update
+        sisyphus_pkg_system_update()
     elif "upgrade" in sys.argv[1:]:
         sisyphus_pkg_system_upgrade()
     elif "search" in sys.argv[1:]:
