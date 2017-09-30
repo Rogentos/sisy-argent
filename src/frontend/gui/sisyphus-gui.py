@@ -106,7 +106,7 @@ class Sisyphus(QtWidgets.QMainWindow):
                             ON a.category = i.category
                             AND a.name = i.name
                             AND a.slot = i.slot
-                            LEFT JOIN removeable_packages as rm
+                            LEFT JOIN removable_packages as rm
                             ON i.category = rm.category
                             AND i.name = rm.name
                             AND i.slot = rm.slot
