@@ -254,7 +254,7 @@ def sisyphus_pkg_sysinfo():
     subprocess.check_call(['emerge', '--info'])
 
 def sisyphus_db_rescue():
-    if os.path.exists(sisyphus_remove_csv_path_pre):
+    if os.path.exists(sisyphus_remote_csv_path_pre):
         os.remove(sisyphus_remote_csv_path_pre)
     if os.path.exists(sisyphus_removable_csv_path_pre):
         os.remove(sisyphus_removable_csv_path_pre)
