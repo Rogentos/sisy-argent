@@ -12,30 +12,29 @@ class Sisyphus(QtWidgets.QMainWindow):
         self.show()
         
         self.SEARCHFIELDS = OrderedDict ([
+            ('Search by name', 'pn'),
             ('Search by category', 'cat'),
-            ('Search by description', 'descr'),
-            ('Search by name', 'pn')
+            ('Search by description', 'descr')
             ])
         self.selectfield.addItems(self.SEARCHFIELDS.keys())
-        self.selectfield.setCurrentIndex(2)
-        self.selectfield.currentIndexChanged.connect(self.setSearchField)
+        self.selectfield.setCurrentText('Search by name')
         Sisyphus.SEARCHFIELD = self.SEARCHFIELDS['Search by name']
-             
+        self.selectfield.currentIndexChanged.connect(self.setSearchField)
+        
         self.SEARCHFILTERS = OrderedDict ([
-            ('All packages', ''),
-            ('Installed packages', 'AND iv IS NOT NULL'),
-            ('Installable packages', 'AND iv IS NULL'),
-            ('Removable packages', 'AND rmv = "yes"'),
-            ('Upgradable packages', 'AND iv <> av')
+            ('All packages', 'all'),
+            ('Installed packages', 'instaled'),
+            ('Installable packages', 'installable'),
+            ('Safe removable packages', 'removable'),
+            ('Upgradable/Rebuilt packages', 'upgradable')
             ])
-        Sisyphus.SEARCHFILTER = self.SEARCHFILTERS['All packages']
+        Sisyphus.SEARCHFILTER = self.SEARCHFILTERS['All packages']        
+        self.selectfilter.addItems(self.SEARCHFILTERS.keys())
+        self.selectfilter.setCurrentText('All packages')
+        self.selectfilter.currentIndexChanged.connect(self.setSearchFilter)
         
         Sisyphus.SEARCHTERM = "'%%'"
 
-        self.selectfilter.addItems(self.SEARCHFILTERS.keys())
-        self.selectfilter.setCurrentIndex(0)
-        self.selectfilter.currentIndexChanged.connect(self.setSearchFilter)
-        
         self.database.clicked.connect(self.rowClicked)
         
         self.input.textEdited.connect(self.filterDatabase)
@@ -69,7 +68,6 @@ class Sisyphus(QtWidgets.QMainWindow):
 
         self.abort.clicked.connect(self.sisyphusExit)
         
-        
     def centerOnScreen(self):
         resolution = QtWidgets.QDesktopWidget().screenGeometry()
         self.move((resolution.width() / 2) - (self.frameSize().width() / 2),
@@ -88,30 +86,100 @@ class Sisyphus(QtWidgets.QMainWindow):
         
     def setSearchFilter(self):
         Sisyphus.SEARCHFILTER = self.SEARCHFILTERS[self.selectfilter.currentText()]
+        Sisyphus.SELECT = self.selectfilter.currentText()
         self.loadDatabase()
 
     def loadDatabase(self):
+        self.SELECTS = OrderedDict ([
+            ('all','''SELECT
+                i.category AS cat,
+                i.name as pn,
+                IFNULL(a.version, 'None') AS av,
+                i.version AS iv,
+                i.description AS descr
+                FROM local_packages AS i LEFT OUTER JOIN remote_packages as a
+                ON i.category = a.category
+                AND i.name = a.name
+                AND i.slot = a.slot
+                WHERE %s LIKE %s
+                UNION
+                SELECT
+                a.category AS cat,
+                a.name as pn,
+                a.version AS av,
+                IFNULL(i.version, 'None') AS iv,
+                a.description AS descr
+                FROM remote_packages AS a LEFT OUTER JOIN local_packages AS i
+                ON a.category = i.category
+                AND a.name = i.name
+                AND a.slot = i.slot
+                WHERE %s LIKE %s
+            ''' % (Sisyphus.SEARCHFIELD, Sisyphus.SEARCHTERM, Sisyphus.SEARCHFIELD, Sisyphus.SEARCHTERM)),
+            ('instaled','''SELECT
+                i.category AS cat,
+                i.name AS pn,
+                a.version AS av,
+                i.version AS iv,
+                i.description AS descr
+                FROM local_packages AS i
+                LEFT JOIN remote_packages AS a
+                ON i.category = a.category
+                AND i.name = a.name
+                AND i.slot = a.slot
+                WHERE %s LIKE %s
+            ''' % (Sisyphus.SEARCHFIELD, Sisyphus.SEARCHTERM)),
+            ('installable','''SELECT
+                a.category AS cat,
+                a.name AS pn,
+                a.version AS av,
+                i.version AS iv,
+                a.description AS descr
+                FROM remote_packages AS a
+                LEFT JOIN local_packages AS i
+                ON a.category = i.category
+                AND a.name = i.name
+                AND a.slot = i.slot
+                WHERE %s LIKE %s
+                AND iv IS NULL
+            ''' % (Sisyphus.SEARCHFIELD, Sisyphus.SEARCHTERM)),
+            ('removable','''SELECT
+                i.category AS cat,
+                i.name AS pn,
+                a.version AS av,
+                i.version AS iv,
+                i.description AS descr,
+                CASE WHEN rm.name ISNULL THEN 'no' ELSE 'yes' END AS rmv
+                FROM local_packages AS i
+                LEFT JOIN remote_packages AS a
+                ON i.category = a.category
+                AND i.name = a.name
+                AND i.slot = a.slot
+                LEFT JOIN removable_packages as rm
+                ON i.category = rm.category
+                AND i.name = rm.name
+                AND i.slot = rm.slot
+                WHERE %s LIKE %s
+                AND rmv = "yes"
+            ''' % (Sisyphus.SEARCHFIELD, Sisyphus.SEARCHTERM)),
+            ('upgradable','''SELECT
+                i.category AS cat,
+                i.name AS pn,
+                a.version AS av,
+                i.version AS iv,
+                i.description AS descr
+                FROM local_packages AS i
+                LEFT JOIN remote_packages AS a
+                ON i.category = a.category
+                AND i.name = a.name
+                AND i.slot = a.slot
+                WHERE %s LIKE %s
+                AND a.timestamp > i.timestamp
+            ''' % (Sisyphus.SEARCHFIELD, Sisyphus.SEARCHTERM)),
+            ])
         with sqlite3.connect(sisyphus_database_path) as db:
             cursor=db.cursor()
             FILTEROUT = "AND cat NOT LIKE 'virtual'"
-            cursor.execute('''SELECT
-                            a.category AS cat,
-                            a.name AS pn,
-                            a.version AS av,
-                            i.version AS iv,
-                            a.description AS descr,
-                            CASE WHEN rm.name ISNULL THEN 'no' ELSE 'yes' END AS rmv
-                            FROM remote_packages AS a
-                            LEFT JOIN local_packages AS i
-                            ON a.category = i.category
-                            AND a.name = i.name
-                            AND a.slot = i.slot
-                            LEFT JOIN removable_packages as rm
-                            ON i.category = rm.category
-                            AND i.name = rm.name
-                            AND i.slot = rm.slot
-                            WHERE %s LIKE %s %s %s
-                        ''' % (Sisyphus.SEARCHFIELD, Sisyphus.SEARCHTERM, Sisyphus.SEARCHFILTER, FILTEROUT))
+            cursor.execute('%s %s' % (self.SELECTS[Sisyphus.SEARCHFILTER], FILTEROUT))
             rows = cursor.fetchall()
             Sisyphus.PKGCOUNT = len(rows)
             Sisyphus.PKGSELECTED = 0
