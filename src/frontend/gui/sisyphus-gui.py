@@ -12,25 +12,25 @@ class Sisyphus(QtWidgets.QMainWindow):
         self.show()
         
         self.SEARCHFIELDS = OrderedDict ([
-            ('Search by name', 'pn'),
-            ('Search by category', 'cat'),
-            ('Search by description', 'descr')
+            ('Search by Name', 'pn'),
+            ('Search by Category', 'cat'),
+            ('Search by Description', 'descr')
             ])
         self.selectfield.addItems(self.SEARCHFIELDS.keys())
-        self.selectfield.setCurrentText('Search by name')
-        Sisyphus.SEARCHFIELD = self.SEARCHFIELDS['Search by name']
+        self.selectfield.setCurrentText('Search by Name')
+        Sisyphus.SEARCHFIELD = self.SEARCHFIELDS['Search by Name']
         self.selectfield.currentIndexChanged.connect(self.setSearchField)
         
         self.SEARCHFILTERS = OrderedDict ([
-            ('All packages', 'all'),
-            ('Installed packages', 'instaled'),
-            ('Installable packages', 'installable'),
-            ('Safe removable packages', 'removable'),
-            ('Upgradable/Rebuilt packages', 'upgradable')
+            ('All Packages', 'all'),
+            ('Installed Packages', 'instaled'),
+            ('Installable Packages', 'installable'),
+            ('Safely Removable Packages', 'removable'),
+            ('Upgradable/Rebuilt Packages', 'upgradable')
             ])
-        Sisyphus.SEARCHFILTER = self.SEARCHFILTERS['All packages']        
+        Sisyphus.SEARCHFILTER = self.SEARCHFILTERS['All Packages']
         self.selectfilter.addItems(self.SEARCHFILTERS.keys())
-        self.selectfilter.setCurrentText('All packages')
+        self.selectfilter.setCurrentText('All Packages')
         self.selectfilter.currentIndexChanged.connect(self.setSearchFilter)
         
         Sisyphus.SEARCHTERM = "'%%'"
