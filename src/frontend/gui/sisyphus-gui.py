@@ -147,28 +147,26 @@ class Sisyphus(QtWidgets.QMainWindow):
                 i.name AS pn,
                 a.version AS av,
                 i.version AS iv,
-                i.description AS descr,
-                CASE WHEN rm.name ISNULL THEN 'no' ELSE 'yes' END AS rmv
+                i.description AS descr
                 FROM local_packages AS i
                 LEFT JOIN remote_packages AS a
                 ON i.category = a.category
                 AND i.name = a.name
                 AND i.slot = a.slot
-                LEFT JOIN removable_packages as rm
+                INNER JOIN removable_packages as rm
                 ON i.category = rm.category
                 AND i.name = rm.name
                 AND i.slot = rm.slot
                 WHERE %s LIKE %s
-                AND rmv = "yes"
             ''' % (Sisyphus.SEARCHFIELD, Sisyphus.SEARCHTERM)),
             ('upgradable','''SELECT
                 i.category AS cat,
                 i.name AS pn,
-                a.version AS av,
+                CASE WHEN a.version = i.version THEN 'Rebuilt' ELSE a.version END AS av,
                 i.version AS iv,
                 i.description AS descr
                 FROM local_packages AS i
-                LEFT JOIN remote_packages AS a
+                INNER JOIN remote_packages AS a
                 ON i.category = a.category
                 AND i.name = a.name
                 AND i.slot = a.slot
