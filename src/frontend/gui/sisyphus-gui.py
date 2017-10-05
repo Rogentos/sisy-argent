@@ -90,6 +90,7 @@ class Sisyphus(QtWidgets.QMainWindow):
         self.loadDatabase()
 
     def loadDatabase(self):
+        FILTEROUT = "AND cat NOT LIKE 'virtual'"
         self.SELECTS = OrderedDict ([
             ('all','''SELECT
                 i.category AS cat,
@@ -101,7 +102,7 @@ class Sisyphus(QtWidgets.QMainWindow):
                 ON i.category = a.category
                 AND i.name = a.name
                 AND i.slot = a.slot
-                WHERE %s LIKE %s
+                WHERE %s LIKE %s %s
                 UNION
                 SELECT
                 a.category AS cat,
@@ -113,8 +114,8 @@ class Sisyphus(QtWidgets.QMainWindow):
                 ON a.category = i.category
                 AND a.name = i.name
                 AND a.slot = i.slot
-                WHERE %s LIKE %s
-            ''' % (Sisyphus.SEARCHFIELD, Sisyphus.SEARCHTERM, Sisyphus.SEARCHFIELD, Sisyphus.SEARCHTERM)),
+                WHERE %s LIKE %s %s
+            ''' % (Sisyphus.SEARCHFIELD, Sisyphus.SEARCHTERM, FILTEROUT, Sisyphus.SEARCHFIELD, Sisyphus.SEARCHTERM, FILTEROUT)),
             ('instaled','''SELECT
                 i.category AS cat,
                 i.name AS pn,
@@ -126,8 +127,8 @@ class Sisyphus(QtWidgets.QMainWindow):
                 ON i.category = a.category
                 AND i.name = a.name
                 AND i.slot = a.slot
-                WHERE %s LIKE %s
-            ''' % (Sisyphus.SEARCHFIELD, Sisyphus.SEARCHTERM)),
+                WHERE %s LIKE %s %s
+            ''' % (Sisyphus.SEARCHFIELD, Sisyphus.SEARCHTERM, FILTEROUT)),
             ('installable','''SELECT
                 a.category AS cat,
                 a.name AS pn,
@@ -139,9 +140,9 @@ class Sisyphus(QtWidgets.QMainWindow):
                 ON a.category = i.category
                 AND a.name = i.name
                 AND a.slot = i.slot
-                WHERE %s LIKE %s
+                WHERE %s LIKE %s %s
                 AND iv IS NULL
-            ''' % (Sisyphus.SEARCHFIELD, Sisyphus.SEARCHTERM)),
+            ''' % (Sisyphus.SEARCHFIELD, Sisyphus.SEARCHTERM, FILTEROUT)),
             ('removable','''SELECT
                 i.category AS cat,
                 i.name AS pn,
@@ -157,8 +158,8 @@ class Sisyphus(QtWidgets.QMainWindow):
                 ON i.category = rm.category
                 AND i.name = rm.name
                 AND i.slot = rm.slot
-                WHERE %s LIKE %s
-            ''' % (Sisyphus.SEARCHFIELD, Sisyphus.SEARCHTERM)),
+                WHERE %s LIKE %s %s
+            ''' % (Sisyphus.SEARCHFIELD, Sisyphus.SEARCHTERM, FILTEROUT)),
             ('upgradable','''SELECT
                 i.category AS cat,
                 i.name AS pn,
@@ -170,14 +171,13 @@ class Sisyphus(QtWidgets.QMainWindow):
                 ON i.category = a.category
                 AND i.name = a.name
                 AND i.slot = a.slot
-                WHERE %s LIKE %s
+                WHERE %s LIKE %s %s
                 AND a.timestamp > i.timestamp
-            ''' % (Sisyphus.SEARCHFIELD, Sisyphus.SEARCHTERM)),
+            ''' % (Sisyphus.SEARCHFIELD, Sisyphus.SEARCHTERM, FILTEROUT)),
             ])
         with sqlite3.connect(sisyphus_database_path) as db:
             cursor=db.cursor()
-            FILTEROUT = "AND cat NOT LIKE 'virtual'"
-            cursor.execute('%s %s' % (self.SELECTS[Sisyphus.SEARCHFILTER], FILTEROUT))
+            cursor.execute('%s' % (self.SELECTS[Sisyphus.SEARCHFILTER]))
             rows = cursor.fetchall()
             Sisyphus.PKGCOUNT = len(rows)
             Sisyphus.PKGSELECTED = 0
