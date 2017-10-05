@@ -172,7 +172,7 @@ class Sisyphus(QtWidgets.QMainWindow):
                 AND i.name = a.name
                 AND i.slot = a.slot
                 WHERE %s LIKE %s %s
-                AND a.timestamp > i.timestamp
+                AND a.timestamp <> i.timestamp
             ''' % (Sisyphus.SEARCHFIELD, Sisyphus.SEARCHTERM, FILTEROUT)),
             ])
         with sqlite3.connect(sisyphus_database_path) as db:
