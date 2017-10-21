@@ -112,10 +112,24 @@ def sync_sisyphus_database_removable_packages_table():
 @animation.wait('syncing remote databases')
 def redcore_sync():
     check_if_root()
-    sync_redcore_portage_tree_and_desktop_overlay()
-    sync_redcore_portage_config()
-    sync_sisyphus_database_remote_packages_table()
-    sync_sisyphus_database_removable_packages_table()
+
+    fetch_sisyphus_remote_packages_table_csv()
+    if filecmp.cmp(sisyphus_remote_csv_path_pre, sisyphus_remote_csv_path_post):
+        os.remove(sisyphus_remote_csv_path_post)
+    else:
+        sync_redcore_portage_tree_and_desktop_overlay()
+        sync_redcore_portage_config()
+        sync_sisyphus_database_remote_packages_table()
+        sync_sisyphus_database_removable_packages_table()
+
+    fetch_sisyphus_removable_packages_table_csv()
+    if filecmp.cmp(sisyphus_removable_csv_path_pre, sisyphus_removable_csv_path_post):
+        os.remove(sisyphus_removable_csv_path_post)
+    else:
+        sync_redcore_portage_tree_and_desktop_overlay()
+        sync_redcore_portage_config()
+        sync_sisyphus_database_remote_packages_table()
+        sync_sisyphus_database_removable_packages_table()
 
 def generate_sisyphus_local_packages_table_csv_pre():
     subprocess.check_call(['/usr/share/sisyphus/helpers/make_local_csv_pre']) # this is really hard to do in python, so we cheat with a bash helper script
