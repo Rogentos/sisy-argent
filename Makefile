@@ -4,7 +4,7 @@ UBINDIR ?= /usr/bin
 DESKTOPDIR ?= /usr/share/applications
 PIXMAPDIR ?= /usr/share/pixmaps
 SISYPHUSDATADIR ?= /usr/share/sisyphus
-SISYPHUSPYLIBDIR ?= /usr/lib64/python3.4
+SISYPHUSPYLIBDIR ?= /usr/lib64/python3.5
 POLKITDIR ?= /usr/share/polkit-1/actions
 
 all:
