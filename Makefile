@@ -4,7 +4,6 @@ UBINDIR ?= /usr/bin
 DESKTOPDIR ?= /usr/share/applications
 PIXMAPDIR ?= /usr/share/pixmaps
 SISYPHUSDATADIR ?= /usr/share/sisyphus
-SISYPHUSPYLIBDIR ?= /usr/lib64/python3.5
 POLKITDIR ?= /usr/share/polkit-1/actions
 
 all:
@@ -19,8 +18,6 @@ install:
 	install -d $(DESTDIR)$(UBINDIR)
 	install -m 0755 sisyphus-gui $(DESTDIR)$(UBINDIR)/
 	install -m 0755 sisyphus-gui-pkexec $(DESTDIR)$(UBINDIR)/
-	install -d $(DESTDIR)$(SISYPHUSPYLIBDIR)
-	install -m 0644 src/backend/libsisyphus.py $(DESTDIR)$(SISYPHUSPYLIBDIR)/
 	install -d $(DESTDIR)$(SISYPHUSDATADIR)
 	install -d $(DESTDIR)$(SISYPHUSDATADIR)/helpers
 	install -d $(DESTDIR)$(SISYPHUSDATADIR)/icon
@@ -44,4 +41,3 @@ uninstall:
 	rm -rf $(DESTDIR)$(PIXMAPDIR)/sisyphus-gui.png
 	rm -rf $(DESTDIR)$(POLKITDIR)/org.redcorelinux.sisyphus-gui.policy
 	rm -rf $(DESTDIR)$(SISYPHUSDATADIR)
-	rm -rf $(DESTDIR)$(SISYPHUSPYLIBDIR)/libsisyphus.py
