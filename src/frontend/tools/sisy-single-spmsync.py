@@ -28,7 +28,7 @@ def sync_sisyphus_single_pkg_spm_csv():
         sisyphusdb.close()
     os.remove(sisyphus_singlepkg_spm_csv_path)
 
-def sisyphus_pkg_spmsync():
+def sisyphus_singlepkg_spmsync():
     generate_sisyphus_spm_csv()
     sync_sisyphus_single_spm_csv()
 
@@ -36,11 +36,8 @@ PKGLIST = sys.argv[2:]
 
 if "__main__" == __name__:
     if "spmsync" in sys.argv[1:]:
-        print("changing values")
         sync_sisyphus_single_spm_csv()
     elif "spmsync-pkg" in sys.argv[1] and len(sys.argv) >=3:
-        print(sys.argv[0])
-        print(sys.argv[1])
-        print(sys.argv[2:])
+        sisyphus_singlepkg_spmsync()
     elif not len(sys.argv) >3:
-        print("blah")
+        print("help sign here")
