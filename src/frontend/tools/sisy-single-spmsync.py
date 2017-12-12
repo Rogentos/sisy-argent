@@ -16,7 +16,7 @@ def sync_sisyphus_single_spm_csv():
         sisyphusdb.close()
     os.remove(sisyphus_spm_csv_path)
 
-def generate_sisyphus_spm_csv():
+def generate_sisyphus_singlepkg_spm_csv():
     subprocess.check_call(['/usr/share/sisyphus/helpers/make_singlepkg_spmsync_csv'])
 
 def sync_sisyphus_single_pkg_spm_csv():
@@ -29,7 +29,7 @@ def sync_sisyphus_single_pkg_spm_csv():
     os.remove(sisyphus_singlepkg_spm_csv_path)
 
 def sisyphus_singlepkg_spmsync():
-    generate_sisyphus_spm_csv()
+    generate_sisyphus_singlepkg_spm_csv()
     sync_sisyphus_single_spm_csv()
 
 PKGLIST = sys.argv[2:]

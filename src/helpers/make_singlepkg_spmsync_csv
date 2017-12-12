@@ -1,14 +1,15 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Disclaimer: NEVER IN YOUR LIFE try this script with *HIGHLY* generic name like 'kernel' or 'lib'
 # There are so many iterations that you don't even need this script timewise
 # It's only for convenience to have one package-pattern added in the sisy DB, not really more
-
 
 export PACKAGE_LIST="$@"
 
  for i in "${PACKAGE_LIST}" ; do
 
-  if [[ "$0" == "sisy-single-spmsync" ]] || [[ "$0" == "sisy-single-spmsync.py" ]] || [[ "$0" == "./sisy-single-spmsync" ]] && [[ "$1" == "spmsync-pkg" ]] ; then
+  if [[ "$0" == "sisy-single-spmsync" ]] || [[ "$0" == "sisy-single-spmsync.py" ]] || \
+    [[ "$0" == "./sisy-single-spmsync" ]] || [[ "$0" == "make_singlepkg_spmsync_csv" ]] \
+    || [[ "$0" = "./make_singlepkg_spmsync_csv" ]] && [[ "$1" == "spmsync-pkg" ]] ; then
    for z in "${@:1}" ; do
 
      for e in ${@:2} ; do
@@ -35,8 +36,8 @@ export PACKAGE_LIST="$@"
           else
             for d in $(qlist -ICv | grep $e ) ; do
               pushd /var/db/pkg/"${d}" > /dev/null 2>&1
-              echo "$(<CATEGORY),$(sed -re "s/-([0-9])/,\1/" <PF),$(<SLOT),$(<BUILD_TIME),$(sed -e "s/\"//g" -e "s/\'//g" -e "s/\,//g" <DESCRIPTION)" >> /tmp/portage_spmsync.csv
-              sort -u /tmp/portage_spmsync.csv -o /tmp/portage_spmsync.csv
+              echo "$(<CATEGORY),$(sed -re "s/-([0-9])/,\1/" <PF),$(<SLOT),$(<BUILD_TIME),$(sed -e "s/\"//g" -e "s/\'//g" -e "s/\,//g" <DESCRIPTION)" >> /tmp/portage_singlepkg_spmsync.csv
+              sort -u /tmp/portage_singlepkg_spmsync.csv -o /tmp/portage_singlepkg_spmsync.csv
               popd > /dev/null 2>&1
             done
           fi
@@ -47,12 +48,12 @@ export PACKAGE_LIST="$@"
   fi
 done
 
-if [[ -e "/tmp/portage_spmsync.csv" ]] ; then
-  mv /tmp/portage_spmsync.csv /var/lib/sisyphus/csv/portage_singlepkg_spmsync.csv || exit 1
+if [[ -e "/tmp/portage_singlepkg_spmsync.csv" ]] ; then
+  mv /tmp/portage_singlepkg_spmsync.csv /var/lib/sisyphus/csv/portage_singlepkg_spmsync.csv || exit 1
 else
-  echo "Re-run the script, the source portage_spmsync.csv file not found"
+  echo "Re-run the script, the source portage_singlepkg_spmsync.csv file not found"
   echo " "
   exit 1
 fi
 
-rm -rf /tmp/portage_spmsync.csv || exit 1
+rm -rf /tmp/portage_singlepkg_spmsync.csv || exit 1
