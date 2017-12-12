@@ -24,6 +24,7 @@ install:
 	install -d $(DESTDIR)$(SISYPHUSDATADIR)/ui
 	install -m 0755 src/helpers/* $(DESTDIR)$(SISYPHUSDATADIR)/helpers/
 	install -m 0755 src/frontend/cli/*.py $(DESTDIR)$(SISYPHUSDATADIR)/
+	install -m 0755 src/frontend/tools/*.py $(DESTDIR)$(SISYPHUSDATADIR)/
 	install -m 0755 src/frontend/gui/*.py $(DESTDIR)$(SISYPHUSDATADIR)/
 	install -m 0755 src/frontend/gui/icon/* $(DESTDIR)$(SISYPHUSDATADIR)/icon/
 	install -m 0755 src/frontend/gui/ui/* $(DESTDIR)$(SISYPHUSDATADIR)/ui/
@@ -32,12 +33,12 @@ install:
 	install -d $(DESTDIR)$(PIXMAPDIR)
 	install -m 0644 sisyphus-gui.png $(DESTDIR)$(PIXMAPDIR)
 	install -d $(DESTDIR)$(POLKITDIR)
-	install -m 0644 org.redcorelinux.sisyphus-gui.policy $(DESTDIR)$(POLKITDIR)/
+	install -m 0644 org.argentlinux.sisyphus-gui.policy $(DESTDIR)$(POLKITDIR)/
 
 uninstall:
 	rm -rf $(DESTDIR)$(UBINDIR)/sisyphus-gui
 	rm -rf $(DESTDIR)$(UBINDIR)/sisyphus-gui-pkexec
 	rm -rf $(DESTDIR)$(DESKTOPDIR)/sisyphus-gui.desktop
 	rm -rf $(DESTDIR)$(PIXMAPDIR)/sisyphus-gui.png
-	rm -rf $(DESTDIR)$(POLKITDIR)/org.redcorelinux.sisyphus-gui.policy
+	rm -rf $(DESTDIR)$(POLKITDIR)/org.argentlinux.sisyphus-gui.policy
 	rm -rf $(DESTDIR)$(SISYPHUSDATADIR)

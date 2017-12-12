@@ -13,13 +13,13 @@ import time
 import urllib3
 
 redcore_portage_tree_path = '/usr/portage'
-redcore_desktop_overlay_path = '/var/lib/layman/redcore-desktop'
-redcore_portage_config_path = '/opt/redcore-build'
+redcore_desktop_overlay_path = '/var/lib/layman/argent-ws'
+redcore_portage_config_path = '/opt/argent-build'
 
-sisyphus_remote_csv_url = 'http://mirror.math.princeton.edu/pub/redcorelinux/csv/remote_packages_pre.csv'
+sisyphus_remote_csv_url = 'http://pkgwork.argentlinux.io/argentwork/csv/remote_packages_pre.csv'
 sisyphus_remote_csv_path_pre = '/var/lib/sisyphus/csv/remote_packages_pre.csv'
 sisyphus_remote_csv_path_post = '/var/lib/sisyphus/csv/remote_packages_post.csv'
-sisyphus_removable_csv_url = 'http://mirror.math.princeton.edu/pub/redcorelinux/csv/removable_packages_pre.csv'
+sisyphus_removable_csv_url = 'http://pkgwork.argentlinux.io/argentwork/csv/removable_packages_pre.csv'
 sisyphus_removable_csv_path_pre = '/var/lib/sisyphus/csv/removable_packages_pre.csv'
 sisyphus_removable_csv_path_post = '/var/lib/sisyphus/csv/removable_packages_post.csv'
 sisyphus_local_csv_path_pre = '/var/lib/sisyphus/csv/local_packages_pre.csv'
@@ -32,8 +32,8 @@ def check_if_root():
         sys.exit("\nYou need root permissions to do this, exiting!\n")
 
 def check_system_mode():
-    portage_binmode_make_conf = '/opt/redcore-build/conf/intel/portage/make.conf.amd64-binmode'
-    portage_mixedmode_make_conf = '/opt/redcore-build/conf/intel/portage/make.conf.amd64-mixedmode'
+    portage_binmode_make_conf = '/opt/argent-build/conf/intel/portage/make.conf.amd64-user'
+    portage_mixedmode_make_conf = '/opt/argent-build/conf/intel/portage/make.conf.amd64-devel'
     portage_make_conf_symlink = '/etc/portage/make.conf'
 
     if not os.path.islink(portage_make_conf_symlink):
@@ -45,7 +45,7 @@ def check_system_mode():
         elif os.path.realpath(portage_make_conf_symlink) == portage_mixedmode_make_conf:
             pass
         else:
-            print("\nThe system is not set to binmode or mixedmode, refusing to run!\n")
+            print("\nThe system is not set to user or devel modes, refusing to run!\n")
             sys.exit(1)
 
 def fetch_sisyphus_remote_packages_table_csv():

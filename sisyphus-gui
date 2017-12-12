@@ -2,6 +2,7 @@
 
 # Sisyphus is a simple GUI for sisyphus, the portage wrapper
 # Main Author : Ghiunhan Mamut @ Redcore Linux Project
+# Forked project's author: Stefan C. Brindusa @ Argent Linux Project
 
 main() {
 	pushd /usr/share/sisyphus
