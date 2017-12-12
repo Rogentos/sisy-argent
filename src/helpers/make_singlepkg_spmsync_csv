@@ -2,14 +2,14 @@
 # Disclaimer: NEVER IN YOUR LIFE try this script with *HIGHLY* generic name like 'kernel' or 'lib'
 # There are so many iterations that you don't even need this script timewise
 # It's only for convenience to have one package-pattern added in the sisy DB, not really more
-
 export PACKAGE_LIST="$@"
 
  for i in "${PACKAGE_LIST}" ; do
 
   if [[ "$0" == "sisy-single-spmsync" ]] || [[ "$0" == "sisy-single-spmsync.py" ]] || \
     [[ "$0" == "./sisy-single-spmsync" ]] || [[ "$0" == "make_singlepkg_spmsync_csv" ]] \
-    || [[ "$0" = "./make_singlepkg_spmsync_csv" ]] && [[ "$1" == "spmsync-pkg" ]] ; then
+    || [[ "$0" = "./make_singlepkg_spmsync_csv" ]] || [[ "$0" == "/usr/share/sisyphus/helpers/make_singlepkg_spmsync_csv" ]] \
+    && [[ "$1" == "spmsync-pkg" ]] ; then
    for z in "${@:1}" ; do
 
      for e in ${@:2} ; do
