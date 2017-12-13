@@ -19,15 +19,6 @@ def sync_sisyphus_single_spm_csv():
     os.remove(sisyphus_singlepkg_spm_csv_path)
 
 
-def getopts(argv):
-    opts = {}  # Empty dictionary to store key-value pairs.
-    while argv:  # While there are arguments left to parse...
-        if argv[0][0] == '-':  # Found a "-name value" pair.
-            opts[argv[0]] = argv[1]  # Add key and value to the dictionary.
-        argv = argv[1:]  # Reduce the argument list by copying it starting from index 1.
-    return opts
-
-
 def generate_sisyphus_singlepkg_spm_csv():
     subprocess.check_call(['/usr/share/sisyphus/helpers/make_singlepkg_spmsync_csv'] + sys.argv[1:])
 
