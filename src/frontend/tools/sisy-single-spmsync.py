@@ -6,7 +6,7 @@ sisyphus_singlepkg_spm_csv_path = '/var/lib/sisyphus/csv/portage_singlepkg_spmsy
 
 def sync_sisyphus_single_spm_csv():
     sisyphusdb = sqlite3.connect(sisyphus_database_path)
-    with open(sisyphus_spm_csv_path) as sisyphus_spm_csv:
+    with open(sisyphus_singlepkg_spm_csv_path) as sisyphus_spm_csv:
         for row in csv.reader(sisyphus_spm_csv):
             sisyphusdb.cursor().execute(
                 '''DELETE FROM local_packages 
@@ -14,10 +14,10 @@ def sync_sisyphus_single_spm_csv():
                 (row[0], row[1], row[2]))
         sisyphusdb.commit()
         sisyphusdb.close()
-    os.remove(sisyphus_spm_csv_path)
+    os.remove(sisyphus_singlepkg_spm_csv_path)
 
 def generate_sisyphus_singlepkg_spm_csv():
-    subprocess.check_call(['/usr/share/sisyphus/helpers/make_singlepkg_spmsync_csv'])
+    subprocess.check_call(['/usr/share/sisyphus/helpers/make_singlepkg_spmsync_csv', str(sys.argv[1:]).encode("utf8")])
 
 def sync_sisyphus_single_pkg_spm_csv():
     sisyphusdb = sqlite3.connect(sisyphus_database_path)
