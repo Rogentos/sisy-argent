@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-import sys
 from libsisyphus import *
 
 check_system_mode()

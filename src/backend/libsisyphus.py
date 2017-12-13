@@ -27,9 +27,11 @@ sisyphus_local_csv_path_post = '/var/lib/sisyphus/csv/local_packages_post.csv'
 sisyphus_spm_csv_path = '/var/lib/sisyphus/csv/portage_spmsync.csv'
 sisyphus_database_path = '/var/lib/sisyphus/db/sisyphus.db'
 
+
 def check_if_root():
     if not os.getuid() == 0:
         sys.exit("\nYou need root permissions to do this, exiting!\n")
+
 
 def check_system_mode():
     portage_binmode_make_conf = '/opt/argent-build/conf/intel/portage/make.conf.amd64-user'
@@ -48,6 +50,7 @@ def check_system_mode():
             print("\nThe system is not set to user or devel modes, refusing to run!\n")
             sys.exit(1)
 
+
 def fetch_sisyphus_remote_packages_table_csv():
     http = urllib3.PoolManager()
     
@@ -58,6 +61,7 @@ def fetch_sisyphus_remote_packages_table_csv():
     else:
         with http.request('GET', sisyphus_remote_csv_url, preload_content=False) as tmp_buffer, open(sisyphus_remote_csv_path_post, 'wb') as output_file:
             shutil.copyfileobj(tmp_buffer, output_file)
+
 
 def fetch_sisyphus_removable_packages_table_csv():
     http = urllib3.PoolManager()
@@ -70,12 +74,15 @@ def fetch_sisyphus_removable_packages_table_csv():
         with http.request('GET', sisyphus_removable_csv_url, preload_content=False) as tmp_buffer, open(sisyphus_removable_csv_path_post, 'wb') as output_file:
             shutil.copyfileobj(tmp_buffer, output_file)
 
+
 def sync_redcore_portage_tree_and_desktop_overlay():
     subprocess.check_call(['emerge', '--sync', '--quiet'])
+
 
 def sync_redcore_portage_config():
     os.chdir(redcore_portage_config_path)
     subprocess.call(['git', 'pull', '--quiet'])
+
 
 def sync_sisyphus_remote_packages_table_csv():
     if not filecmp.cmp(sisyphus_remote_csv_path_pre, sisyphus_remote_csv_path_post):
@@ -89,6 +96,7 @@ def sync_sisyphus_remote_packages_table_csv():
         sisyphusdb.close()
     shutil.move(sisyphus_remote_csv_path_post, sisyphus_remote_csv_path_pre)
 
+
 def sync_sisyphus_removable_packages_table_csv():
     if not filecmp.cmp(sisyphus_removable_csv_path_pre, sisyphus_removable_csv_path_post):
         sisyphusdb = sqlite3.connect(sisyphus_database_path)
@@ -100,14 +108,17 @@ def sync_sisyphus_removable_packages_table_csv():
         sisyphusdb.commit()
         sisyphusdb.close()
     shutil.move(sisyphus_removable_csv_path_post, sisyphus_removable_csv_path_pre)
-        
+
+
 def sync_sisyphus_database_remote_packages_table():
     fetch_sisyphus_remote_packages_table_csv()
     sync_sisyphus_remote_packages_table_csv()
 
+
 def sync_sisyphus_database_removable_packages_table():
     fetch_sisyphus_removable_packages_table_csv()
     sync_sisyphus_removable_packages_table_csv()
+
 
 @animation.wait('syncing remote databases')
 def redcore_sync():
@@ -131,11 +142,14 @@ def redcore_sync():
         sync_sisyphus_database_remote_packages_table()
         sync_sisyphus_database_removable_packages_table()
 
+
 def generate_sisyphus_local_packages_table_csv_pre():
     subprocess.check_call(['/usr/share/sisyphus/helpers/make_local_csv_pre']) # this is really hard to do in python, so we cheat with a bash helper script
 
+
 def generate_sisyphus_local_packages_table_csv_post():
     subprocess.check_call(['/usr/share/sisyphus/helpers/make_local_csv_post']) # this is really hard to do in python, so we cheat with a bash helper script
+
 
 def sync_sisyphus_local_packages_table_csv():
     if not filecmp.cmp(sisyphus_local_csv_path_pre, sisyphus_local_csv_path_post):
@@ -149,8 +163,10 @@ def sync_sisyphus_local_packages_table_csv():
         sisyphusdb.close()
     shutil.move(sisyphus_local_csv_path_post, sisyphus_local_csv_path_pre)
 
+
 def generate_sisyphus_spm_csv():
     subprocess.check_call(['/usr/share/sisyphus/helpers/make_spmsync_csv']) # this is really hard to do in python, so we cheat using a bash helper script
+
 
 def sync_sisyphus_spm_csv():
     sisyphusdb = sqlite3.connect(sisyphus_database_path)
@@ -163,10 +179,12 @@ def sync_sisyphus_spm_csv():
         sisyphusdb.close()
     os.remove(sisyphus_spm_csv_path)
 
+
 @animation.wait('syncing local databases')
 def sisyphus_pkg_spmsync():
     generate_sisyphus_spm_csv()
     sync_sisyphus_spm_csv()
+
 
 def sisyphus_pkg_install(PKGLIST):
     redcore_sync()
@@ -177,6 +195,7 @@ def sisyphus_pkg_install(PKGLIST):
     generate_sisyphus_local_packages_table_csv_post()
     sync_sisyphus_local_packages_table_csv()
 
+
 def sisyphus_pkg_auto_install(PKGLIST):
     redcore_sync()
     generate_sisyphus_local_packages_table_csv_pre()
@@ -185,6 +204,7 @@ def sisyphus_pkg_auto_install(PKGLIST):
     portage_call.communicate()
     generate_sisyphus_local_packages_table_csv_post()
     sync_sisyphus_local_packages_table_csv()
+
 
 def sisyphus_pkg_uninstall(PKGLIST):
     redcore_sync()
@@ -195,6 +215,7 @@ def sisyphus_pkg_uninstall(PKGLIST):
     generate_sisyphus_local_packages_table_csv_post()
     sync_sisyphus_local_packages_table_csv()
 
+
 def sisyphus_pkg_auto_uninstall(PKGLIST):
     redcore_sync()
     generate_sisyphus_local_packages_table_csv_pre()
@@ -203,6 +224,7 @@ def sisyphus_pkg_auto_uninstall(PKGLIST):
     portage_call.communicate()
     generate_sisyphus_local_packages_table_csv_post()
     sync_sisyphus_local_packages_table_csv()
+
 
 def sisyphus_pkg_force_uninstall(PKGLIST):
     redcore_sync()
@@ -213,6 +235,7 @@ def sisyphus_pkg_force_uninstall(PKGLIST):
     generate_sisyphus_local_packages_table_csv_post()
     sync_sisyphus_local_packages_table_csv()
 
+
 def sisyphus_pkg_auto_force_uninstall(PKGLIST):
     redcore_sync()
     generate_sisyphus_local_packages_table_csv_pre()
@@ -222,6 +245,7 @@ def sisyphus_pkg_auto_force_uninstall(PKGLIST):
     generate_sisyphus_local_packages_table_csv_post()
     sync_sisyphus_local_packages_table_csv()
 
+
 def sisyphus_pkg_remove_orphans():
     redcore_sync()
     generate_sisyphus_local_packages_table_csv_pre()
@@ -230,6 +254,7 @@ def sisyphus_pkg_remove_orphans():
     portage_call.communicate()
     generate_sisyphus_local_packages_table_csv_post()
     sync_sisyphus_local_packages_table_csv()
+
 
 def sisyphus_pkg_auto_remove_orphans():
     redcore_sync()
@@ -249,6 +274,7 @@ def sisyphus_pkg_system_upgrade():
     generate_sisyphus_local_packages_table_csv_post()
     sync_sisyphus_local_packages_table_csv()
 
+
 def sisyphus_pkg_auto_system_upgrade():
     redcore_sync()
     generate_sisyphus_local_packages_table_csv_pre()
@@ -258,14 +284,18 @@ def sisyphus_pkg_auto_system_upgrade():
     generate_sisyphus_local_packages_table_csv_post()
     sync_sisyphus_local_packages_table_csv()
 
+
 def sisyphus_pkg_search(PKGLIST):
     subprocess.check_call(['emerge', '--search'] + PKGLIST)
+
 
 def sisyphus_pkg_system_update():
     redcore_sync()
 
+
 def sisyphus_pkg_sysinfo():
     subprocess.check_call(['emerge', '--info'])
+
 
 def sisyphus_db_rescue():
     if os.path.exists(sisyphus_remote_csv_path_pre):
@@ -277,8 +307,10 @@ def sisyphus_db_rescue():
     sisyphus_pkg_system_update()
     sisyphus_pkg_spmsync()
 
+
 def kill_bg_portage(bg_portage):
         bg_portage.terminate()
+
 
 def sisyphus_pkg_help():
     print("\nUsage : sisyphus command [package(s)] || [file(s)]\n")

@@ -1,8 +1,9 @@
 #!/usr/bin/python3
-import sys, subprocess, sqlite3
+
 from collections import OrderedDict
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from libsisyphus import *
+
 
 class Sisyphus(QtWidgets.QMainWindow):
     def __init__(self):
@@ -67,12 +68,14 @@ class Sisyphus(QtWidgets.QMainWindow):
         self.progress.hide()
 
         self.abort.clicked.connect(self.sisyphusExit)
-        
+
+
     def centerOnScreen(self):
         resolution = QtWidgets.QDesktopWidget().screenGeometry()
         self.move((resolution.width() / 2) - (self.frameSize().width() / 2),
                     (resolution.height() / 2) - (self.frameSize().height() / 2))
-        
+
+
     def rowClicked(self):
         Sisyphus.PKGSELECTED = len(self.database.selectionModel().selectedRows())
         self.showPackageCount()
@@ -83,7 +86,7 @@ class Sisyphus(QtWidgets.QMainWindow):
     def setSearchField(self):
         Sisyphus.SEARCHFIELD = self.SEARCHFIELDS[self.selectfield.currentText()]
         self.loadDatabase()
-        
+
     def setSearchFilter(self):
         Sisyphus.SEARCHFILTER = self.SEARCHFILTERS[self.selectfilter.currentText()]
         Sisyphus.SELECT = self.selectfilter.currentText()
@@ -263,27 +266,33 @@ class Sisyphus(QtWidgets.QMainWindow):
     def sisyphusExit(self):
         self.close()
 
+
 class UpdateThread(QtCore.QThread):
     def run(self):
         sisyphus_pkg_system_update()
+
 
 class InstallThread(QtCore.QThread):
     def run(self):
         PKGLIST = Sisyphus.PKGLIST
         sisyphus_pkg_auto_install(PKGLIST)
 
+
 class UninstallThread(QtCore.QThread):
     def run(self):
         PKGLIST = Sisyphus.PKGLIST
         sisyphus_pkg_auto_uninstall(PKGLIST)
 
+
 class UpgradeThread(QtCore.QThread):
     def run(self):
         sisyphus_pkg_auto_system_upgrade()
 
+
 class OrphansThread(QtCore.QThread):
     def run(self):
         sisyphus_pkg_auto_remove_orphans()
+
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)

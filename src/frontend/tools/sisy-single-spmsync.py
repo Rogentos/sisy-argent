@@ -1,9 +1,10 @@
 #!/usr/bin/python3
 
-import sys
 from libsisyphus import *
 
+PKGLIST = sys.argv[2:]
 sisyphus_singlepkg_spm_csv_path = '/var/lib/sisyphus/csv/portage_singlepkg_spmsync.csv'
+
 
 def sync_sisyphus_single_spm_csv():
     sisyphusdb = sqlite3.connect(sisyphus_database_path)
@@ -17,6 +18,7 @@ def sync_sisyphus_single_spm_csv():
         sisyphusdb.close()
     os.remove(sisyphus_singlepkg_spm_csv_path)
 
+
 def getopts(argv):
     opts = {}  # Empty dictionary to store key-value pairs.
     while argv:  # While there are arguments left to parse...
@@ -25,8 +27,10 @@ def getopts(argv):
         argv = argv[1:]  # Reduce the argument list by copying it starting from index 1.
     return opts
 
+
 def generate_sisyphus_singlepkg_spm_csv():
     subprocess.check_call(['/usr/share/sisyphus/helpers/make_singlepkg_spmsync_csv'] + sys.argv[1:])
+
 
 def sync_sisyphus_single_pkg_spm_csv():
     sisyphusdb = sqlite3.connect(sisyphus_database_path)
@@ -37,12 +41,10 @@ def sync_sisyphus_single_pkg_spm_csv():
         sisyphusdb.close()
     os.remove(sisyphus_singlepkg_spm_csv_path)
 
+
 def sisyphus_singlepkg_spmsync():
     generate_sisyphus_singlepkg_spm_csv()
     sync_sisyphus_single_spm_csv()
-
-PKGLIST = sys.argv[2:]
-
 
 
 if "__main__" == __name__:
