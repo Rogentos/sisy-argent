@@ -25,9 +25,6 @@ export PACKAGE_LIST="$@"
 #        echo "And because we are extremely lazy to implement some special method of getting the available"
 #        echo "packages and comparing them with what you inserted in the input, we will just take all the"
 #        echo "available and installed package with the same name and put them into sisy database."
-#        echo " "
-#        echo "Getting category of your input'ed package"
-#        echo " "
 
        for x in $(find /var/db/pkg/ -iname "*$e*" | cut -d "/" -f5 | sort -u) ; do
           if [[ ! -e "/var/db/pkg/$x" ]] ; then
